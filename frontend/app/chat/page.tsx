@@ -30,6 +30,23 @@ export default function ChatPage() {
   const [isTyping, setIsTyping] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
+  // Pre-built prompts
+  const prebuiltPrompts = [
+    "Can you review my resume?",
+    "How do I prepare for interviews?",
+    "Tips for a career change",
+    "How to start a job search?",
+  ]
+
+  // Handler for clicking a pre-built prompt (auto-submit)
+  const handlePromptClick = (prompt: string) => {
+    setInput(prompt)
+    setTimeout(() => {
+      const fakeEvent = { preventDefault: () => {} } as React.FormEvent
+      handleSubmit(fakeEvent)
+    }, 0)
+  }
+
   // Scroll to bottom of chat when messages change
   useEffect(() => {
     scrollToBottom()
@@ -117,6 +134,21 @@ export default function ChatPage() {
 
             {isTyping && <TypingIndicator />}
             <div ref={messagesEndRef} />
+          </div>
+
+          {/* Pre-built Prompts */}
+          <div className="flex flex-wrap gap-2 px-4 pb-2 pt-2 bg-gray-900/70 border-t border-b border-gray-800">
+            {prebuiltPrompts.map((prompt, idx) => (
+              <button
+                key={idx}
+                type="button"
+                className="px-3 py-1 rounded-full bg-blue-700/80 text-white text-sm hover:bg-blue-800 transition"
+                onClick={() => handlePromptClick(prompt)}
+                disabled={isTyping}
+              >
+                {prompt}
+              </button>
+            ))}
           </div>
 
           {/* Chat Input */}
