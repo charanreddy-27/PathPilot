@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./PathPilot/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3000"
+    depends_on:
+      - backend
+    environment:
+      - REACT_APP_BACKEND_URL=http://backend:5000
+      - REACT_APP_RASA_URL=http://rasa:5005
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+      - rasa
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/pathpilot
+      - RASA_URL=http://rasa:5005
+    volumes:
+      - ./career_recommender.csv:/app/career_recommender.csv
+
+  rasa:
+    build:
+      context: ./rasa_bot
+      dockerfile: Dockerfile
+    ports:
+      - "5005:5005"
+    volumes:
+      - ./rasa_bot:/app
+    command: run --enable-api --cors "*"
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+volumes:
+  mongodb_data: 
