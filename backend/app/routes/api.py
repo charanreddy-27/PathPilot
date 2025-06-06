@@ -6,6 +6,10 @@ from app.utils.career_utils import get_career_recommendations
 
 api_bp = Blueprint('api', __name__)
 
+@api_bp.route('/health', methods=['GET'])
+def health_check():
+    return jsonify({"status": "healthy", "message": "Backend API is running"})
+
 @api_bp.route('/chat', methods=['POST'])
 def chat():
     data = request.json

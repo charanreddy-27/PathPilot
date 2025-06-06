@@ -1,16 +1,15 @@
-import type React from "react"
-import "./globals.css"
-import { Inter } from "next/font/google"
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
 import { ThemeProvider } from "@/components/theme-provider"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ['latin'] })
 
-export const metadata = {
-  title: "Career Counsellor Chatbot | Personal Project",
-  description: "A personal project showcasing an AI-powered career guidance chatbot",
-    generator: 'v0.dev'
+export const metadata: Metadata = {
+  title: 'PathPilot - Career Counselor',
+  description: 'AI-powered career guidance and counseling',
 }
 
 export default function RootLayout({
