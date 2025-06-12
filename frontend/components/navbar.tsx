@@ -4,8 +4,9 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu, X, Sparkles } from "lucide-react"
+import { Menu, X, Sparkles, User, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useAuth } from "@/contexts/AuthContext"
 import { useMobile } from "@/hooks/use-mobile"
 
 export default function Navbar() {
@@ -13,6 +14,7 @@ export default function Navbar() {
   const isMobile = useMobile()
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const { user, logout } = useAuth()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -54,76 +56,128 @@ export default function Navbar() {
               </span>
             </motion.div>
             <span className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
-              CareerBot
+              PathPilot
             </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center space-x-6">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`text-sm font-medium transition-colors hover:text-blue-400 relative group ${
-                  pathname === link.href ? "text-blue-400" : "text-gray-300"
+                className={`text-sm font-medium transition-colors ${
+                  pathname === link.href
+                    ? "text-blue-400"
+                    : "text-gray-400 hover:text-gray-200"
                 }`}
               >
                 {link.label}
-                <span
-                  className={`absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300 group-hover:w-full ${
-                    pathname === link.href ? "w-full" : "w-0"
-                  }`}
-                ></span>
               </Link>
             ))}
-            <Link href="/chat">
-              <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-[0_0_10px_rgba(79,70,229,0.3)] hover:shadow-[0_0_15px_rgba(79,70,229,0.5)] transition-all duration-300">
-                Try the Bot
-              </Button>
-            </Link>
+            
+            {user ? (
+              <div className="flex items-center space-x-4">
+                <span className="text-sm text-gray-400">
+                  Welcome, {user.name}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={logout}
+                  className="text-gray-400 hover:text-gray-200"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  Logout
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-4">
+                <Link href="/login">
+                  <Button variant="ghost" size="sm">
+                    Login
+                  </Button>
+                </Link>
+                <Link href="/register">
+                  <Button size="sm">
+                    Register
+                  </Button>
+                </Link>
+              </div>
+            )}
           </nav>
 
           {/* Mobile Menu Button */}
-          <button className="flex items-center md:hidden" onClick={toggleMenu} aria-label="Toggle menu">
-            {isOpen ? <X className="w-6 h-6 text-gray-300" /> : <Menu className="w-6 h-6 text-gray-300" />}
+          <button
+            onClick={toggleMenu}
+            className="md:hidden p-2 text-gray-400 hover:text-gray-200"
+          >
+            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
-      </div>
 
-      {/* Mobile Navigation */}
-      <AnimatePresence>
-        {isOpen && isMobile && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="md:hidden bg-gray-900/90 backdrop-blur-md border-b border-gray-800"
-          >
-            <div className="container px-4 mx-auto py-4">
-              <nav className="flex flex-col space-y-4">
+        {/* Mobile Navigation */}
+        <AnimatePresence>
+          {isOpen && (
+            <motion.nav
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden overflow-hidden"
+            >
+              <div className="py-4 space-y-4">
                 {navLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
                     onClick={closeMenu}
-                    className={`text-sm font-medium transition-colors hover:text-blue-400 ${
-                      pathname === link.href ? "text-blue-400" : "text-gray-300"
+                    className={`block text-sm font-medium transition-colors ${
+                      pathname === link.href
+                        ? "text-blue-400"
+                        : "text-gray-400 hover:text-gray-200"
                     }`}
                   >
                     {link.label}
                   </Link>
                 ))}
-                <Link href="/chat" onClick={closeMenu}>
-                  <Button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-                    Try the Bot
-                  </Button>
-                </Link>
-              </nav>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                
+                {user ? (
+                  <>
+                    <div className="text-sm text-gray-400 py-2 border-t border-gray-800">
+                      Welcome, {user.name}
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        logout();
+                        closeMenu();
+                      }}
+                      className="w-full text-left text-gray-400 hover:text-gray-200"
+                    >
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Logout
+                    </Button>
+                  </>
+                ) : (
+                  <div className="space-y-2 pt-4 border-t border-gray-800">
+                    <Link href="/login" onClick={closeMenu}>
+                      <Button variant="ghost" size="sm" className="w-full">
+                        Login
+                      </Button>
+                    </Link>
+                    <Link href="/register" onClick={closeMenu}>
+                      <Button size="sm" className="w-full">
+                        Register
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </motion.nav>
+          )}
+        </AnimatePresence>
+      </div>
     </header>
   )
 }

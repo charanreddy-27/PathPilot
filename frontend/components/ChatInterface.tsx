@@ -1,34 +1,56 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { useAuth } from '@/contexts/AuthContext'
 
 interface Message {
   text: string
   sender: 'user' | 'bot'
 }
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+
 export default function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([])
   const [inputText, setInputText] = useState('')
+  const [loading, setLoading] = useState(false)
+  const { user } = useAuth()
+  const router = useRouter()
 
   const sendMessage = async () => {
+    if (!user) {
+      router.push('/login')
+      return
+    }
+
     if (!inputText.trim()) return
 
     const userMessage = { text: inputText, sender: 'user' as const }
     setMessages(prev => [...prev, userMessage])
     setInputText('')
+    setLoading(true)
 
     try {
-      const response = await fetch('http://localhost:5000/api/chat', {
+      const response = await fetch(`${API_URL}/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify({ message: inputText }),
       })
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          router.push('/login')
+          return
+        }
+        throw new Error('Failed to send message')
+      }
 
       const data = await response.json()
       const botMessage = { text: data.response, sender: 'bot' as const }
@@ -37,7 +59,20 @@ export default function ChatInterface() {
       console.error('Error:', error)
       const errorMessage = { text: 'Sorry, I encountered an error. Please try again.', sender: 'bot' as const }
       setMessages(prev => [...prev, errorMessage])
+    } finally {
+      setLoading(false)
     }
+  }
+
+  if (!user) {
+    return (
+      <div className="text-center p-8">
+        <h2 className="text-xl font-semibold mb-4">Please login to chat</h2>
+        <Button onClick={() => router.push('/login')}>
+          Login
+        </Button>
+      </div>
+    )
   }
 
   return (
@@ -61,6 +96,13 @@ export default function ChatInterface() {
             </div>
           </div>
         ))}
+        {loading && (
+          <div className="text-left mb-4">
+            <div className="inline-block p-3 rounded-lg bg-gray-200 text-gray-800">
+              Thinking...
+            </div>
+          </div>
+        )}
       </ScrollArea>
       <div className="flex gap-2">
         <Input
@@ -69,8 +111,11 @@ export default function ChatInterface() {
           onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
           placeholder="Type your message..."
           className="flex-1"
+          disabled={loading}
         />
-        <Button onClick={sendMessage}>Send</Button>
+        <Button onClick={sendMessage} disabled={loading}>
+          {loading ? 'Sending...' : 'Send'}
+        </Button>
       </div>
     </div>
   )

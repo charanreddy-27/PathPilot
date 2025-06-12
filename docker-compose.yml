@@ -6,12 +6,12 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "3001:3000"
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - NEXT_PUBLIC_API_URL=http://backend:5000
     depends_on:
       - backend
-    environment:
-      - REACT_APP_BACKEND_URL=http://backend:5000
-      - REACT_APP_RASA_URL=http://rasa:5005
 
   backend:
     build:
@@ -19,14 +19,15 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
-    depends_on:
-      - mongodb
-      - rasa
     environment:
-      - MONGODB_URI=mongodb://mongodb:27017/pathpilot
-      - RASA_URL=http://rasa:5005
-    volumes:
-      - ./career_recommender.csv:/app/career_recommender.csv
+      - FLASK_APP=app
+      - FLASK_ENV=production
+      - MONGO_URI=mongodb://mongo:27017/pathpilot
+      - JWT_SECRET_KEY=your-secret-key-here
+      - CORS_ORIGINS=http://localhost:3000,http://frontend:3000
+    depends_on:
+      - mongo
+      - rasa
 
   rasa:
     build:
@@ -38,7 +39,7 @@ services:
       - ./rasa_bot:/app
     command: run --enable-api --cors "*"
 
-  mongodb:
+  mongo:
     image: mongo:latest
     ports:
       - "27017:27017"
