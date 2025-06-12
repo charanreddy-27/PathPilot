@@ -14,7 +14,7 @@ def register():
         raise ValidationError('Missing required fields')
         
     try:
-        user_model = User(current_app.db)
+        user_model = User(current_app.database)
         user = user_model.create_user(
             email=data['email'],
             password=data['password'],
@@ -41,7 +41,7 @@ def login():
     if not all(k in data for k in ('email', 'password')):
         raise ValidationError('Missing email or password')
         
-    user_model = User(current_app.db)
+    user_model = User(current_app.database)
     user = user_model.authenticate(data['email'], data['password'])
     
     if not user:
@@ -59,7 +59,7 @@ def login():
 @jwt_required()
 def get_user_profile():
     current_user_id = get_jwt_identity()
-    user_model = User(current_app.db)
+    user_model = User(current_app.database)
     user = user_model.get_user_by_id(current_user_id)
     
     if not user:

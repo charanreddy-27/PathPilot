@@ -3,8 +3,8 @@ import bcrypt
 from bson import ObjectId
 
 class User:
-    def __init__(self, db):
-        self.collection = db.users
+    def __init__(self, database):
+        self.collection = database.get_collection('users')
         
     def create_user(self, email, password, name):
         """Create a new user"""
