@@ -1,6 +1,7 @@
 'use client'
 
 import React, { createContext, useContext, useState, useEffect } from 'react'
+import Cookies from 'js-cookie'
 
 interface User {
     _id: string;
@@ -26,7 +27,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     useEffect(() => {
         // Check if user is logged in
-        const token = localStorage.getItem('token')
+        const token = Cookies.get('token')
         if (token) {
             fetchUserProfile()
         } else {
@@ -36,9 +37,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const fetchUserProfile = async () => {
         try {
+            const token = Cookies.get('token')
+            if (!token) {
+                setLoading(false);
+                return;
+            }
             const response = await fetch(`${API_URL}/auth/me`, {
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${token}`
                 }
             })
             
@@ -46,11 +52,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 const data = await response.json()
                 setUser(data.user)
             } else {
-                localStorage.removeItem('token')
+                Cookies.remove('token')
             }
         } catch (error) {
             console.error('Error fetching user profile:', error)
-            localStorage.removeItem('token')
+            Cookies.remove('token')
         } finally {
             setLoading(false)
         }
@@ -71,7 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         const data = await response.json()
-        localStorage.setItem('token', data.access_token)
+        Cookies.set('token', data.access_token, { expires: 7 }) // Set cookie to expire in 7 days
         await fetchUserProfile()
     }
 
@@ -90,12 +96,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         const data = await response.json()
-        localStorage.setItem('token', data.access_token)
+        Cookies.set('token', data.access_token, { expires: 7 }) // Set cookie to expire in 7 days
         await fetchUserProfile()
     }
 
     const logout = () => {
-        localStorage.removeItem('token')
+        Cookies.remove('token')
         setUser(null)
     }
 

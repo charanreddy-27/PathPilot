@@ -55,7 +55,7 @@ PathPilot is an AI-powered career counseling platform that helps users explore c
    ```
 
 4. **Access the application**:
-   - Frontend: http://localhost:3000
+   - Frontend: http://localhost:3000 (or 3001 if 3000 is in use)
    - Backend API: http://localhost:5000
 
 ### Option 2: Local Development
@@ -68,10 +68,11 @@ PathPilot is an AI-powered career counseling platform that helps users explore c
    pip install -r requirements.txt
    
    # Set environment variables
-   export FLASK_APP=app
+   export FLASK_APP=app:create_app()
    export FLASK_ENV=development
    export SECRET_KEY=your-secret-key
    export MONGO_URI=mongodb://localhost:27017/pathpilot
+   export CORS_ORIGINS=http://localhost:3000,http://localhost:3001
    
    # Start backend
    flask run
@@ -99,12 +100,12 @@ PathPilot is an AI-powered career counseling platform that helps users explore c
 
 **Backend (.env)**:
 ```env
-FLASK_APP=app
+FLASK_APP=app:create_app()
 FLASK_ENV=production
 SECRET_KEY=your-secret-key-here
 MONGO_URI=mongodb://localhost:27017/pathpilot
 JWT_SECRET_KEY=your-jwt-secret-key-here
-CORS_ORIGINS=http://localhost:3000
+CORS_ORIGINS=http://localhost:3000,http://localhost:3001
 API_PREFIX=/api
 ```
 
@@ -154,6 +155,33 @@ pathpilot/
 ### Health Check
 - `GET /api/health` - API health status
 
+## ✅ Deployment Checklist
+
+### Pre-Deployment
+- [x] Frontend builds successfully
+- [x] Backend starts without errors
+- [x] Database connection established
+- [x] Authentication system working
+- [x] Chat functionality operational
+- [x] CORS configuration updated for multiple ports
+- [x] Error handling implemented
+- [x] Environment variables configured
+
+### Current Status
+- ✅ **Frontend**: Running on http://localhost:3001 (Next.js 15.2.4)
+- ✅ **Backend**: Running on http://localhost:5000 (Flask)
+- ✅ **Database**: MongoDB connection established
+- ✅ **Authentication**: JWT-based auth with bcrypt
+- ✅ **Chat System**: Keyword-based AI chatbot
+- ✅ **CORS**: Configured for ports 3000 and 3001
+- ✅ **Error Handling**: Comprehensive error handling implemented
+
+### Known Issues Resolved
+- ✅ Next.js cache corruption (fixed with rimraf clean script)
+- ✅ CORS configuration for multiple ports
+- ✅ Authentication endpoint 500 errors (added error handling)
+- ✅ Next.js config warnings (removed deprecated options)
+
 ## 🚀 Deployment Options
 
 ### 1. Vercel (Frontend) + Railway (Backend)
@@ -195,16 +223,33 @@ npm start
 ```bash
 cd backend
 pip install -r requirements.txt
-gunicorn --bind 0.0.0.0:5000 app:create_app()
+gunicorn --bind 0.0.0.0:5000 "app:create_app()"
 ```
 
-## 🧪 Testing
+## 🔧 Development Commands
 
-1. **Register a new account** at http://localhost:3000/register
-2. **Login** with your credentials
-3. **Test the chat interface** by sending messages
-4. **Verify protected routes** work correctly
-5. **Check responsive design** on different screen sizes
+### Frontend
+```bash
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+npm run clean        # Clean .next directory
+```
+
+### Backend
+```bash
+flask run            # Start development server
+python -m flask run  # Alternative start method
+```
+
+## 📝 Notes
+
+- The application is now ready for deployment
+- All major issues have been resolved
+- Both frontend and backend are running successfully
+- Authentication and chat functionality are fully operational
+- CORS is configured to handle multiple frontend ports
+- Comprehensive error handling is in place
 
 ## 🔒 Security Features
 

@@ -18,7 +18,7 @@ class Config:
     
     # API Configuration
     API_PREFIX = '/api'
-    CORS_ORIGINS = os.getenv('CORS_ORIGINS', '*').split(',')
+    CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'http://localhost:3000,http://localhost:3001').split(',')
     
     # JWT Configuration
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'your-jwt-secret-key-here')

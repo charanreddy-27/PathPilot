@@ -20,9 +20,9 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // Redirect to home if accessing auth routes with token
+  // Redirect authenticated users from auth routes to /chat
   if (isAuthPath && token) {
-    return NextResponse.redirect(new URL('/', request.url))
+    return NextResponse.redirect(new URL('/chat', request.url))
   }
 
   return NextResponse.next()

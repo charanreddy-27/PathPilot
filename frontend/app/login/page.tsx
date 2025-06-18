@@ -23,7 +23,7 @@ export default function LoginPage() {
 
         try {
             await login(email, password)
-            router.push('/')
+            router.push('/chat')
         } catch (error) {
             setError(error instanceof Error ? error.message : 'Failed to login')
         } finally {
