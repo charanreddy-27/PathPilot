@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --upgrade 'gunicorn>=20.1.0'
+RUN gunicorn --version
 
 # Copy the rest of the application
 COPY . .
@@ -24,4 +25,4 @@ ENV PYTHONUNBUFFERED=1
 EXPOSE 5000
 
 # Start the application with gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--factory", "app:create_app"] 
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "run:app"] 
