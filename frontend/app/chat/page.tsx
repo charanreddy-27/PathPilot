@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { Send, Sparkles, Bot, Zap, MessageSquare } from "lucide-react"
+import { Send, Sparkles, Bot, Zap } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import ChatMessage from "@/components/chat-message"
 import TypingIndicator from "@/components/typing-indicator"

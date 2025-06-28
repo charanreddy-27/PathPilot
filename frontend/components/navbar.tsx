@@ -5,9 +5,11 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X, BrainCircuit } from "lucide-react"
+import { useMobile } from "@/hooks/use-mobile"
 
 export default function Navbar() {
   const pathname = usePathname()
+  const isMobile = useMobile()
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
@@ -83,24 +85,26 @@ export default function Navbar() {
           </nav>
 
           {/* Mobile Menu Button */}
-          <button
-            onClick={toggleMenu}
-            className="md:hidden p-2 text-gray-400 hover:text-gray-200 focus:outline-none"
-            aria-label="Toggle menu"
-          >
-            {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+          {isMobile && (
+            <button
+              onClick={toggleMenu}
+              className="p-2 text-gray-400 hover:text-gray-200 focus:outline-none"
+              aria-label="Toggle menu"
+            >
+              {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          )}
         </div>
 
         {/* Mobile Navigation */}
         <AnimatePresence>
-          {isOpen && (
+          {isOpen && isMobile && (
             <motion.nav
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="md:hidden overflow-hidden"
+              className="overflow-hidden"
             >
               <div className="py-4 space-y-4">
                 {navLinks.map((link) => (
