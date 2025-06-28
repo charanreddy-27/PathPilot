@@ -1,12 +1,12 @@
 import type { Metadata } from 'next'
-import { Instrument_Sans } from 'next/font/google'
+import { Inter } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from "@/lib/theme-provider"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 
-// Using a modern, clean sans-serif font
-const instrumentSans = Instrument_Sans({ 
+// Using a clean, modern sans-serif font
+const inter = Inter({ 
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-sans'
@@ -28,7 +28,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${instrumentSans.variable} font-sans bg-gray-950 text-gray-200 antialiased`}>
+      <body className={`${inter.variable} font-sans bg-background text-foreground antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark">
           <div className="flex flex-col min-h-screen">
             <Navbar />

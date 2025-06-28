@@ -88,38 +88,33 @@ const config: Config = {
   				from: { height: 'var(--radix-accordion-content-height)' },
   				to: { height: '0' },
   			},
-        'float': {
+        'gentle-float': {
           '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-10px)' },
-        },
-        'pulse-glow': {
-          '0%, 100%': { opacity: '1' },
-          '50%': { opacity: '0.6' },
-        },
-        'shine': {
-          from: { backgroundPosition: '200% 0' },
-          to: { backgroundPosition: '-200% 0' },
+          '50%': { transform: 'translateY(-6px)' },
         },
         'shimmer': {
           '100%': { transform: 'translateX(100%)' },
+        },
+        'fade-in': {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
         },
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
   			'accordion-up': 'accordion-up 0.2s ease-out',
-        'float': 'float 6s ease-in-out infinite',
-        'pulse-glow': 'pulse-glow 3s ease-in-out infinite',
-        'shine': 'shine 6s linear infinite',
+        'gentle-float': 'gentle-float 4s ease-in-out infinite',
         'shimmer': 'shimmer 1.5s ease-in-out infinite',
+        'fade-in': 'fade-in 0.5s ease-out',
   		},
       backgroundImage: {
-        'gradient-radial-blue': 'radial-gradient(circle at center, rgba(59, 130, 246, 0.15), transparent 70%)',
-        'gradient-radial-indigo': 'radial-gradient(circle at center, rgba(99, 102, 241, 0.15), transparent 70%)',
-        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+        'gradient-elegant': 'linear-gradient(to right bottom, var(--tw-gradient-stops))',
+        'gradient-soft': 'linear-gradient(to bottom, var(--tw-gradient-stops))',
       },
       boxShadow: {
-        'glow-blue': '0 0 15px rgba(59, 130, 246, 0.3), 0 0 30px rgba(59, 130, 246, 0.2)',
-        'soft': '0 8px 30px rgba(0, 0, 0, 0.12)',
+        'elegant': '0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01)',
+        'elegant-sm': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.01)',
+        'card': '0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03)',
       },
   	}
   },

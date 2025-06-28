@@ -1,8 +1,9 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { motion } from "framer-motion"
-import { ArrowRight, BrainCircuit, ChevronRight, GraduationCap, LineChart } from "lucide-react"
+import { ArrowRight, Compass, ChevronRight, GraduationCap, LineChart } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useEffect, useRef } from "react"
 
@@ -20,7 +21,7 @@ interface Particle {
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
-  // Particle background effect
+  // Subtle elegant particle background effect
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -39,24 +40,24 @@ export default function Home() {
 
     // Create particles - optimized count for performance
     const particles: Particle[] = []
-    const particleCount = Math.min(Math.floor(window.innerWidth / 20), 60) // Reduced count for better performance
+    const particleCount = Math.min(Math.floor(window.innerWidth / 40), 30) // Reduced count for better performance
 
-    // More subtle, tech-savvy colors
+    // Elegant, subtle colors
     const colors = [
-      "rgba(59, 130, 246, 0.4)", // blue
-      "rgba(139, 92, 246, 0.4)", // purple
-      "rgba(16, 185, 129, 0.3)", // green
-      "rgba(99, 102, 241, 0.4)", // indigo
+      "rgba(59, 130, 246, 0.12)", // blue
+      "rgba(79, 70, 229, 0.1)", // indigo
+      "rgba(16, 185, 129, 0.08)", // green
+      "rgba(99, 102, 241, 0.09)", // indigo
     ]
 
     for (let i = 0; i < particleCount; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        size: Math.random() * 2 + 0.5, // Smaller particles
-        speedX: (Math.random() - 0.5) * 0.3,
-        speedY: (Math.random() - 0.5) * 0.3,
-        opacity: Math.random() * 0.5 + 0.2, // Varied opacity for depth
+        size: Math.random() * 1.2 + 0.5, // Smaller particles
+        speedX: (Math.random() - 0.5) * 0.15,
+        speedY: (Math.random() - 0.5) * 0.15,
+        opacity: Math.random() * 0.3 + 0.1, // Lower opacity for subtlety
         color: colors[Math.floor(Math.random() * colors.length)],
       })
     }
@@ -64,7 +65,7 @@ export default function Home() {
     // Create a mouse effect
     let mouseX = 0
     let mouseY = 0
-    let mouseRadius = 100
+    let mouseRadius = 60
 
     const handleMouseMove = (e: MouseEvent) => {
       mouseX = e.clientX
@@ -78,9 +79,9 @@ export default function Home() {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
       // Add subtle gradient background
-      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height)
-      gradient.addColorStop(0, "rgba(10, 10, 18, 1)")
-      gradient.addColorStop(1, "rgba(23, 23, 42, 1)")
+      const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height)
+      gradient.addColorStop(0, "rgba(17, 24, 39, 1)") // gray-900
+      gradient.addColorStop(1, "rgba(31, 41, 55, 0.95)") // gray-800
       ctx.fillStyle = gradient
       ctx.fillRect(0, 0, canvas.width, canvas.height)
 
@@ -96,16 +97,16 @@ export default function Home() {
         // Mouse interaction - gentle push away from mouse
         if (distance < mouseRadius) {
           const force = (mouseRadius - distance) / mouseRadius
-          p.speedX -= dx * force * 0.02
-          p.speedY -= dy * force * 0.02
+          p.speedX -= dx * force * 0.005
+          p.speedY -= dy * force * 0.005
         }
 
         // Add some natural movement with slight drift
-        p.speedX += (Math.random() - 0.5) * 0.01
-        p.speedY += (Math.random() - 0.5) * 0.01
+        p.speedX += (Math.random() - 0.5) * 0.003
+        p.speedY += (Math.random() - 0.5) * 0.003
 
         // Limit max speed
-        const maxSpeed = 0.5
+        const maxSpeed = 0.2
         const currentSpeed = Math.sqrt(p.speedX * p.speedX + p.speedY * p.speedY)
         if (currentSpeed > maxSpeed) {
           p.speedX = (p.speedX / currentSpeed) * maxSpeed
@@ -132,15 +133,15 @@ export default function Home() {
         ctx.fill()
 
         // Connect particles with subtle lines - optimized to reduce connections
-        if (i % 2 === 0) { // Only process every other particle for connections
-          for (let j = i + 1; j < Math.min(i + 10, particles.length); j++) {
+        if (i % 4 === 0) { // Only process every fourth particle for connections
+          for (let j = i + 1; j < Math.min(i + 6, particles.length); j++) {
             const p2 = particles[j]
             const distance = Math.sqrt(Math.pow(p.x - p2.x, 2) + Math.pow(p.y - p2.y, 2))
 
-            if (distance < 100) { // Reduced connection distance
+            if (distance < 70) { // Reduced connection distance
               ctx.beginPath()
-              ctx.strokeStyle = `rgba(150, 150, 255, ${0.03 * (1 - distance / 100)})`
-              ctx.lineWidth = 0.3
+              ctx.strokeStyle = `rgba(156, 163, 175, ${0.015 * (1 - distance / 70)})`
+              ctx.lineWidth = 0.15
               ctx.moveTo(p.x, p.y)
               ctx.lineTo(p2.x, p2.y)
               ctx.stroke()
@@ -189,49 +190,48 @@ export default function Home() {
         <section className="min-h-screen flex flex-col items-center justify-center px-4 sm:px-6">
           <div className="max-w-5xl mx-auto text-center">
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
               transition={{ duration: 0.8 }}
-              className="flex items-center justify-center mb-6"
+              className="flex items-center justify-center mb-8"
             >
-              <span className="relative inline-block">
-                <span className="absolute inset-0 blur-xl bg-gradient-to-r from-blue-600 to-indigo-600 opacity-30 rounded-full"></span>
-                <BrainCircuit className="relative w-14 h-14 text-blue-500" />
-              </span>
+              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center shadow-elegant border border-primary/10">
+                <Compass className="w-8 h-8 text-primary" strokeWidth={1.5} />
+              </div>
             </motion.div>
             
             <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-4xl md:text-6xl font-bold text-white mb-4 tracking-tight"
+              className="text-4xl md:text-6xl font-medium mb-6 tracking-tight"
             >
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">PathPilot</span>
-              <span className="block mt-2 text-3xl md:text-5xl">AI Career Counselor</span>
+              <span className="text-primary">PathPilot</span>
+              <span className="block mt-3 text-2xl md:text-4xl font-normal text-foreground/90">AI Career Counselor</span>
             </motion.h1>
             
             <motion.p 
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="text-gray-300 text-lg md:text-xl max-w-2xl mx-auto mb-8"
+              className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed"
             >
               Navigate your professional journey with personalized guidance from our advanced AI career counselor.
             </motion.p>
             
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
               className="flex flex-col sm:flex-row gap-4 justify-center"
             >
               <Link href="/chat">
-                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-600/20 hover:shadow-blue-600/40 transition-all duration-300 font-medium rounded-full">
+                <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-elegant-sm rounded-full px-8">
                   Start Chatting
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <Button size="lg" variant="outline" className="border-gray-700 text-gray-300 hover:text-white hover:bg-gray-800/50 rounded-full">
+              <Button size="lg" variant="outline" className="border-border text-muted-foreground hover:text-foreground hover:bg-background/50 rounded-full px-8">
                 Learn More
               </Button>
             </motion.div>
@@ -244,17 +244,19 @@ export default function Home() {
             className="absolute bottom-10 left-1/2 transform -translate-x-1/2"
           >
             <div className="flex flex-col items-center">
-              <span className="text-gray-400 text-sm mb-2">Scroll to explore</span>
-              <div className="w-6 h-10 border-2 border-gray-600 rounded-full flex justify-center">
+              <span className="text-muted-foreground text-sm mb-2">Scroll to explore</span>
+              <div className="w-6 h-10 border border-muted/50 rounded-full flex justify-center">
                 <motion.div
                   animate={{ 
-                    y: [0, 12, 0],
+                    y: [0, 8, 0],
                   }}
-                  transition={{ 
+                  transition={{
+                    duration: 1.8,
                     repeat: Infinity,
-                    duration: 2
+                    repeatType: "loop",
+                    ease: "easeInOut"
                   }}
-                  className="w-1 h-2 bg-blue-500 rounded-full mt-2"
+                  className="w-1.5 h-1.5 rounded-full bg-primary/70 mt-2"
                 />
               </div>
             </div>
@@ -294,7 +296,7 @@ export default function Home() {
                   description: "Get up-to-date information about industry trends, job markets, and in-demand skills."
                 },
                 {
-                  icon: <BrainCircuit className="h-8 w-8 mb-4 text-indigo-500" />,
+                  icon: <GraduationCap className="h-8 w-8 mb-4 text-indigo-500" />,
                   title: "AI-Powered Resume Analysis",
                   description: "Optimize your resume with AI-powered recommendations and feedback."
                 },

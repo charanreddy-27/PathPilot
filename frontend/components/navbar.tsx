@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu, X, BrainCircuit } from "lucide-react"
+import { Menu, X, Compass } from "lucide-react"
 import { useMobile } from "@/hooks/use-mobile"
 
 export default function Navbar() {
@@ -25,7 +25,7 @@ export default function Navbar() {
   const toggleMenu = () => setIsOpen(!isOpen)
   const closeMenu = () => setIsOpen(false)
 
-  // Simplified navigation - just Home and Chat
+  // Navigation links
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "/chat", label: "Chat" },
@@ -35,25 +35,17 @@ export default function Navbar() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled 
-          ? "bg-gray-900/80 backdrop-blur-lg shadow-md shadow-gray-900/20 border-b border-gray-800/30" 
+          ? "bg-background/80 backdrop-blur-xl shadow-elegant-sm border-b border-border/40" 
           : "bg-transparent"
       }`}
     >
       <div className="container px-4 mx-auto">
         <div className="flex items-center justify-between h-16 md:h-18">
-          <Link href="/" className="flex items-center space-x-2 group">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5 }}
-              className="relative"
-            >
-              <div className="absolute -inset-1 rounded-full blur-md bg-gradient-to-r from-blue-600 to-indigo-600 opacity-70 group-hover:opacity-100 transition duration-300"></div>
-              <div className="relative flex items-center justify-center w-8 h-8 bg-gray-900 rounded-full border border-gray-700 text-white">
-                <BrainCircuit className="w-4 h-4 text-blue-400" />
-              </div>
-            </motion.div>
-            <span className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">
+          <Link href="/" className="flex items-center space-x-3 group">
+            <div className="flex items-center justify-center w-9 h-9 bg-primary/10 rounded-full shadow-elegant-sm border border-primary/10">
+              <Compass className="w-5 h-5 text-primary" strokeWidth={2} />
+            </div>
+            <span className="text-lg font-medium tracking-wide text-foreground">
               PathPilot
             </span>
           </Link>
@@ -65,18 +57,18 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`relative font-medium text-sm group transition-colors ${
+                  className={`relative font-medium text-sm tracking-wide transition-colors ${
                     pathname === link.href
-                      ? "text-white"
-                      : "text-gray-400 hover:text-white"
+                      ? "text-primary"
+                      : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
                   {link.label}
                   {pathname === link.href && (
                     <motion.span 
                       layoutId="navbar-indicator"
-                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-blue-500"
-                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary"
+                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
                     />
                   )}
                 </Link>
@@ -88,7 +80,7 @@ export default function Navbar() {
           {isMobile && (
             <button
               onClick={toggleMenu}
-              className="p-2 text-gray-400 hover:text-gray-200 focus:outline-none"
+              className="p-2 rounded-full hover:bg-accent/50 text-muted-foreground hover:text-foreground focus:outline-none transition-colors"
               aria-label="Toggle menu"
             >
               {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -104,18 +96,18 @@ export default function Navbar() {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="overflow-hidden"
+              className="overflow-hidden glass-effect rounded-xl mt-2 shadow-elegant"
             >
-              <div className="py-4 space-y-4">
+              <div className="py-4 space-y-4 px-4">
                 {navLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
                     onClick={closeMenu}
-                    className={`block text-base font-medium transition-colors ${
+                    className={`block text-base font-medium transition-colors py-2 px-3 rounded-lg ${
                       pathname === link.href
-                        ? "text-blue-400"
-                        : "text-gray-400 hover:text-gray-200"
+                        ? "text-primary bg-primary/5"
+                        : "text-muted-foreground hover:text-foreground hover:bg-accent/10"
                     }`}
                   >
                     {link.label}

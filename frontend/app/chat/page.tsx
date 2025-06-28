@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { Send, Sparkles, Bot, Zap, User } from "lucide-react"
+import { Send, Sparkles, Bot, User, MessageSquare } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 // Types for our chat messages
@@ -31,25 +31,25 @@ function ChatMessage({ message }: { message: Message }) {
           <div
             className={`w-8 h-8 rounded-full flex items-center justify-center transition-transform group-hover:scale-110 ${
               isUser
-                ? "bg-blue-600/20 text-blue-400 border border-blue-500/30"
-                : "bg-purple-600/20 text-purple-400 border border-purple-500/30"
+                ? "bg-primary/10 text-primary border border-primary/10 shadow-elegant-sm"
+                : "bg-accent/30 text-accent-foreground border border-accent/10 shadow-elegant-sm"
             }`}
           >
-            {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+            {isUser ? <User className="w-4 h-4" strokeWidth={2} /> : <Bot className="w-4 h-4" strokeWidth={2} />}
           </div>
         </div>
 
         <div
           className={`p-3 rounded-2xl text-sm md:text-base ${
             isUser
-              ? "bg-blue-600 text-white rounded-br-none"
-              : "bg-gray-800/70 text-gray-100 rounded-bl-none border border-gray-700/50"
+              ? "bg-primary text-primary-foreground rounded-br-none shadow-elegant-sm"
+              : "bg-card/80 text-card-foreground rounded-bl-none border border-border/30 shadow-elegant-sm"
           }`}
         >
-          <p className="whitespace-pre-wrap">{message.content}</p>
+          <p className="whitespace-pre-wrap leading-relaxed">{message.content}</p>
           
           {/* Message time - could be implemented with actual timestamps */}
-          <div className={`text-xs mt-1 opacity-50 text-right ${isUser ? "text-blue-200" : "text-gray-400"}`}>
+          <div className={`text-xs mt-1 opacity-50 text-right ${isUser ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
             {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </div>
         </div>
@@ -64,26 +64,26 @@ function TypingIndicator() {
     <div className="flex mb-6 justify-start">
       <div className="flex max-w-[85%] flex-row">
         <div className="flex-shrink-0 flex items-start mt-1 mr-3">
-          <div className="w-8 h-8 rounded-full flex items-center justify-center bg-purple-600/20 text-purple-400 border border-purple-500/30">
-            <Bot className="w-4 h-4" />
+          <div className="w-8 h-8 rounded-full flex items-center justify-center bg-accent/30 text-accent-foreground border border-accent/10 shadow-elegant-sm">
+            <Bot className="w-4 h-4" strokeWidth={2} />
           </div>
         </div>
 
-        <div className="p-3 rounded-2xl bg-gray-800/70 border border-gray-700/50 text-gray-100 rounded-bl-none">
+        <div className="p-3 rounded-2xl bg-card/80 border border-border/30 text-card-foreground rounded-bl-none shadow-elegant-sm">
           <div className="flex items-center space-x-1.5">
             {[0, 1, 2].map((i) => (
               <motion.div
                 key={i}
-                className="w-2 h-2 rounded-full bg-purple-400/80"
+                className="w-1.5 h-1.5 rounded-full bg-primary/60"
                 animate={{
                   scale: [1, 1.2, 1],
-                  opacity: [0.6, 1, 0.6]
+                  opacity: [0.5, 0.8, 0.5]
                 }}
                 transition={{
-                  duration: 1.2,
+                  duration: 1.5,
                   repeat: Number.POSITIVE_INFINITY,
                   repeatType: "loop",
-                  delay: i * 0.15,
+                  delay: i * 0.2,
                 }}
               />
             ))}
@@ -208,23 +208,23 @@ export default function ChatPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="flex-grow container mx-auto px-4 py-6 max-w-5xl">
+      <div className="flex-grow container mx-auto px-4 py-8 max-w-5xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="flex flex-col h-[calc(100vh-6rem)] bg-gray-900/30 backdrop-blur-md rounded-2xl overflow-hidden border border-gray-800/50 shadow-lg"
+          className="flex flex-col h-[calc(100vh-8rem)] bg-background/40 backdrop-blur-xl rounded-2xl overflow-hidden border border-border/20 shadow-elegant"
         >
           {/* Chat Header */}
-          <div className="p-4 border-b border-gray-800/50 bg-gradient-to-r from-gray-900/80 to-gray-800/80">
+          <div className="p-4 border-b border-border/20 bg-card/50">
             <div className="flex items-center">
-              <div className="flex items-center justify-center h-10 w-10 rounded-full bg-blue-600/20 border border-blue-500/30 mr-3">
-                <Bot className="h-5 w-5 text-blue-400" />
+              <div className="flex items-center justify-center h-10 w-10 rounded-full bg-primary/10 border border-primary/10 mr-3 shadow-elegant-sm">
+                <MessageSquare className="h-5 w-5 text-primary" strokeWidth={1.5} />
               </div>
               <div>
-                <h1 className="text-lg font-semibold text-white">Career Counselor</h1>
-                <div className="flex items-center text-xs text-green-400">
-                  <span className="h-2 w-2 rounded-full bg-green-400 mr-1.5"></span>
+                <h1 className="text-lg font-medium tracking-wide text-foreground">Career Counselor</h1>
+                <div className="flex items-center text-xs text-emerald-500">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
                   Online and ready to assist
                 </div>
               </div>
@@ -232,7 +232,7 @@ export default function ChatPage() {
           </div>
 
           {/* Messages Container */}
-          <div className="flex-grow overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent p-4 bg-gradient-to-b from-transparent to-gray-900/20">
+          <div className="flex-grow overflow-y-auto scrollbar-thin p-4 bg-gradient-to-b from-transparent to-background/5">
             <AnimatePresence initial={false}>
               {messages.map((message) => (
                 <ChatMessage key={message.id} message={message} />
@@ -244,18 +244,17 @@ export default function ChatPage() {
           </div>
           
           {/* Suggested Prompts */}
-          <div className="px-4 py-3 bg-gray-900/50 border-t border-gray-800/50">
+          <div className="px-4 py-3 bg-card/30 border-t border-border/20">
             <div className="flex items-center mb-2">
-              <Sparkles className="h-4 w-4 text-blue-400 mr-2" />
-              <span className="text-sm text-gray-400">Suggested questions</span>
+              <Sparkles className="h-4 w-4 text-primary/80 mr-2" strokeWidth={1.5} />
+              <span className="text-sm text-muted-foreground">Suggested questions</span>
             </div>
             <div className="flex flex-wrap gap-2">
-              {prebuiltPrompts.map((prompt, idx) => (
+              {prebuiltPrompts.map((prompt) => (
                 <button
-                  key={idx}
+                  key={prompt}
                   onClick={() => handlePromptClick(prompt)}
-                  disabled={isTyping}
-                  className="px-3 py-1.5 text-sm bg-gray-800/70 hover:bg-gray-700/70 text-gray-300 rounded-lg border border-gray-700/50 transition-colors"
+                  className="px-3 py-1.5 text-xs rounded-full bg-accent/20 text-accent-foreground hover:bg-accent/30 transition-colors border border-accent/5 shadow-elegant-sm"
                 >
                   {prompt}
                 </button>
@@ -264,38 +263,33 @@ export default function ChatPage() {
           </div>
 
           {/* Input Area */}
-          <form onSubmit={handleSubmit} className="p-4 bg-gray-900/70 border-t border-gray-800/50">
-            <div className="flex items-end space-x-2 bg-gray-800/50 rounded-lg border border-gray-700/50 transition-all focus-within:border-blue-500/50 focus-within:shadow-[0_0_10px_rgba(59,130,246,0.2)]">
-              <textarea
-                ref={inputRef}
-                value={input}
-                onChange={handleTextareaChange}
-                onKeyDown={handleKeyPress}
-                placeholder="Ask your career questions..."
-                rows={1}
-                disabled={isTyping}
-                className="flex-grow resize-none max-h-[150px] overflow-auto scrollbar-thin scrollbar-thumb-gray-700 m-0 w-full bg-transparent px-4 py-3 text-gray-100 focus:outline-none"
-                style={{ height: "auto" }}
-              />
-              <div className="pr-2 pb-2">
-                <Button
-                  type="submit"
-                  disabled={!input.trim() || isTyping}
-                  size="sm"
-                  className="h-8 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
-                >
-                  <Send className="h-4 w-4" />
-                </Button>
+          <div className="p-4 bg-card/40 border-t border-border/20">
+            <form onSubmit={handleSubmit} className="flex items-end gap-2">
+              <div className="flex-grow relative">
+                <textarea
+                  ref={inputRef}
+                  value={input}
+                  onChange={handleTextareaChange}
+                  onKeyDown={handleKeyPress}
+                  placeholder="Type your message..."
+                  className="w-full rounded-xl border border-border/30 bg-background/60 p-3 pr-10 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 resize-none min-h-[48px] max-h-[200px] shadow-elegant-sm"
+                  style={{ height: "auto" }}
+                  rows={1}
+                />
+                <div className="absolute right-3 bottom-3 text-xs text-muted-foreground">
+                  <kbd className="px-1.5 py-0.5 rounded border border-border/30 bg-accent/20 text-accent-foreground text-[10px]">⏎</kbd>
+                </div>
               </div>
-            </div>
-            <div className="mt-2 text-xs text-gray-500 flex items-center justify-between">
-              <span>Press Enter to send, Shift+Enter for new line</span>
-              <div className="flex items-center">
-                <Zap className="h-3 w-3 text-blue-400 mr-1" />
-                <span>Powered by AI</span>
-              </div>
-            </div>
-          </form>
+              <Button 
+                type="submit" 
+                size="icon" 
+                className="h-12 w-12 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-elegant-sm"
+                disabled={!input.trim()}
+              >
+                <Send className="h-5 w-5" strokeWidth={1.5} />
+              </Button>
+            </form>
+          </div>
         </motion.div>
       </div>
     </div>
