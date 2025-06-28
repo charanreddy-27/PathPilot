@@ -27,12 +27,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans bg-background text-foreground antialiased`}>
+    <html lang="en" suppressHydrationWarning className="h-full">
+      <body className={`${inter.variable} font-sans bg-background text-foreground antialiased flex flex-col min-h-screen`}>
         <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark">
-          <div className="flex flex-col min-h-screen">
+          <div className="flex flex-col min-h-screen w-full">
             <Navbar />
-            <main className="flex-grow pt-16">{children}</main>
+            <main className="flex-grow pt-16 w-full">{children}</main>
             <Footer />
           </div>
         </ThemeProvider>

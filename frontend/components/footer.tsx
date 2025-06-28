@@ -3,9 +3,9 @@ import { Github, ExternalLink, Compass } from "lucide-react"
 
 export default function Footer() {
   return (
-    <footer className="py-8 mt-10">
+    <footer className="py-8 mt-10 w-full">
       <div className="container px-4 mx-auto">
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center w-full">
           {/* Logo */}
           <div className="flex items-center space-x-2 mb-6">
             <div className="flex items-center justify-center w-6 h-6">
@@ -25,7 +25,7 @@ export default function Footer() {
           </div>
 
           {/* Attribution */}
-          <div className="text-xs text-muted-foreground/70 flex items-center flex-wrap justify-center gap-2 mb-4">
+          <div className="text-xs text-muted-foreground/70 flex items-center flex-wrap justify-center gap-2 mb-4 w-full">
             <span>© {new Date().getFullYear()} PathPilot AI</span>
             <span className="block w-1 h-1 rounded-full bg-border"></span>
             <span>Built with Next.js and Tailwind</span>

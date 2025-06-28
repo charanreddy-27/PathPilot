@@ -185,10 +185,10 @@ export default function Home() {
   return (
     <>
       <canvas ref={canvasRef} className="fixed top-0 left-0 w-full h-full -z-10" />
-      <div className="relative z-10">
+      <div className="relative z-10 w-full">
         {/* Hero Section */}
-        <section className="min-h-screen flex flex-col items-center justify-center px-4 sm:px-6">
-          <div className="max-w-5xl mx-auto text-center">
+        <section className="min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 w-full">
+          <div className="w-full max-w-5xl mx-auto text-center">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -204,7 +204,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-4xl md:text-6xl font-medium mb-6 tracking-tight"
+              className="text-4xl md:text-6xl font-medium mb-6 tracking-tight px-4"
             >
               <span className="text-primary">PathPilot</span>
               <span className="block mt-3 text-2xl md:text-4xl font-normal text-foreground/90">AI Career Counselor</span>
@@ -214,7 +214,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed"
+              className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed px-4"
             >
               Navigate your professional journey with personalized guidance from our advanced AI career counselor.
             </motion.p>
@@ -223,15 +223,15 @@ export default function Home() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.6 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center"
+              className="flex flex-col sm:flex-row gap-4 justify-center px-4"
             >
-              <Link href="/chat">
-                <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-elegant-sm rounded-full px-8">
+              <Link href="/chat" className="w-full sm:w-auto">
+                <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-elegant-sm rounded-full px-8 w-full sm:w-auto">
                   Start Chatting
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <Button size="lg" variant="outline" className="border-border text-muted-foreground hover:text-foreground hover:bg-background/50 rounded-full px-8">
+              <Button size="lg" variant="outline" className="border-border text-muted-foreground hover:text-foreground hover:bg-background/50 rounded-full px-8 w-full sm:w-auto">
                 Learn More
               </Button>
             </motion.div>

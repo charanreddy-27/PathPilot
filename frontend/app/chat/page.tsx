@@ -26,7 +26,7 @@ function ChatMessage({ message }: { message: Message }) {
       transition={{ duration: 0.3 }}
       className={`group flex mb-6 last:mb-2 ${isUser ? "justify-end" : "justify-start"}`}
     >
-      <div className={`flex max-w-[85%] ${isUser ? "flex-row-reverse" : "flex-row"}`}>
+      <div className={`flex max-w-[85%] md:max-w-[75%] ${isUser ? "flex-row-reverse" : "flex-row"}`}>
         <div className={`flex-shrink-0 flex items-start mt-1 ${isUser ? "ml-3" : "mr-3"}`}>
           <div
             className={`w-8 h-8 rounded-full flex items-center justify-center transition-transform group-hover:scale-110 ${
@@ -62,7 +62,7 @@ function ChatMessage({ message }: { message: Message }) {
 function TypingIndicator() {
   return (
     <div className="flex mb-6 justify-start">
-      <div className="flex max-w-[85%] flex-row">
+      <div className="flex max-w-[85%] md:max-w-[75%] flex-row">
         <div className="flex-shrink-0 flex items-start mt-1 mr-3">
           <div className="w-8 h-8 rounded-full flex items-center justify-center bg-accent/30 text-accent-foreground border border-accent/10 shadow-elegant-sm">
             <Bot className="w-4 h-4" strokeWidth={2} />
@@ -207,13 +207,13 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <div className="flex-grow container mx-auto px-4 py-8 max-w-5xl">
+    <div className="flex flex-col min-h-screen w-full">
+      <div className="flex-grow container mx-auto px-4 py-8 max-w-5xl w-full">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="flex flex-col h-[calc(100vh-8rem)] bg-background/40 backdrop-blur-xl rounded-2xl overflow-hidden border border-border/20 shadow-elegant"
+          className="flex flex-col h-[calc(100vh-8rem)] bg-background/40 backdrop-blur-xl rounded-2xl overflow-hidden border border-border/20 shadow-elegant w-full"
         >
           {/* Chat Header */}
           <div className="p-4 border-b border-border/20 bg-card/50">
@@ -233,14 +233,16 @@ export default function ChatPage() {
 
           {/* Messages Container */}
           <div className="flex-grow overflow-y-auto scrollbar-thin p-4 bg-gradient-to-b from-transparent to-background/5">
-            <AnimatePresence initial={false}>
-              {messages.map((message) => (
-                <ChatMessage key={message.id} message={message} />
-              ))}
-            </AnimatePresence>
+            <div className="w-full max-w-full">
+              <AnimatePresence initial={false}>
+                {messages.map((message) => (
+                  <ChatMessage key={message.id} message={message} />
+                ))}
+              </AnimatePresence>
 
-            {isTyping && <TypingIndicator />}
-            <div ref={messagesEndRef} />
+              {isTyping && <TypingIndicator />}
+              <div ref={messagesEndRef} />
+            </div>
           </div>
           
           {/* Suggested Prompts */}
@@ -264,8 +266,8 @@ export default function ChatPage() {
 
           {/* Input Area */}
           <div className="p-4 bg-card/40 border-t border-border/20">
-            <form onSubmit={handleSubmit} className="flex items-end gap-2">
-              <div className="flex-grow relative">
+            <form onSubmit={handleSubmit} className="flex items-end gap-2 w-full">
+              <div className="flex-grow relative w-full">
                 <textarea
                   ref={inputRef}
                   value={input}
@@ -283,7 +285,7 @@ export default function ChatPage() {
               <Button 
                 type="submit" 
                 size="icon" 
-                className="h-12 w-12 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-elegant-sm"
+                className="h-12 w-12 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-elegant-sm flex-shrink-0"
                 disabled={!input.trim()}
               >
                 <Send className="h-5 w-5" strokeWidth={1.5} />

@@ -40,7 +40,7 @@ export default function Navbar() {
       }`}
     >
       <div className="container px-4 mx-auto">
-        <div className="flex items-center justify-between h-16 md:h-18">
+        <div className="flex items-center justify-between h-16 md:h-18 w-full">
           <Link href="/" className="flex items-center space-x-3 group">
             <div className="flex items-center justify-center w-9 h-9 bg-primary/10 rounded-full shadow-elegant-sm border border-primary/10">
               <Compass className="w-5 h-5 text-primary" strokeWidth={2} />
@@ -51,7 +51,7 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-10">
+          <nav className="hidden md:flex items-center">
             <div className="flex items-center space-x-8">
               {navLinks.map((link) => (
                 <Link
@@ -96,15 +96,15 @@ export default function Navbar() {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="overflow-hidden glass-effect rounded-xl mt-2 shadow-elegant"
+              className="overflow-hidden glass-effect rounded-xl mt-2 shadow-elegant w-full"
             >
-              <div className="py-4 space-y-4 px-4">
+              <div className="py-4 space-y-4 px-4 w-full">
                 {navLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
                     onClick={closeMenu}
-                    className={`block text-base font-medium transition-colors py-2 px-3 rounded-lg ${
+                    className={`block text-base font-medium transition-colors py-2 px-3 rounded-lg w-full ${
                       pathname === link.href
                         ? "text-primary bg-primary/5"
                         : "text-muted-foreground hover:text-foreground hover:bg-accent/10"
