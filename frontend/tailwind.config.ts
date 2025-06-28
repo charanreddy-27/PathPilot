@@ -11,6 +11,9 @@ const config: Config = {
     "./hooks/**/*.{js,ts,jsx,tsx,mdx}"
   ],
   theme: {
+    fontFamily: {
+      sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
+    },
   	extend: {
   		colors: {
   			background: 'hsl(var(--background))',
@@ -67,30 +70,57 @@ const config: Config = {
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
-  			sm: 'calc(var(--radius) - 4px)'
+  			sm: 'calc(var(--radius) - 4px)',
+        '2xl': '1rem',
+        '3xl': '1.5rem',
+        '4xl': '2rem',
   		},
+      backdropBlur: {
+        xs: '2px',
+        xl: '24px',
+      },
   		keyframes: {
   			'accordion-down': {
-  				from: {
-  					height: '0'
-  				},
-  				to: {
-  					height: 'var(--radix-accordion-content-height)'
-  				}
+  				from: { height: '0' },
+  				to: { height: 'var(--radix-accordion-content-height)' },
   			},
   			'accordion-up': {
-  				from: {
-  					height: 'var(--radix-accordion-content-height)'
-  				},
-  				to: {
-  					height: '0'
-  				}
-  			}
+  				from: { height: 'var(--radix-accordion-content-height)' },
+  				to: { height: '0' },
+  			},
+        'float': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
+        },
+        'pulse-glow': {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.6' },
+        },
+        'shine': {
+          from: { backgroundPosition: '200% 0' },
+          to: { backgroundPosition: '-200% 0' },
+        },
+        'shimmer': {
+          '100%': { transform: 'translateX(100%)' },
+        },
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
-  			'accordion-up': 'accordion-up 0.2s ease-out'
-  		}
+  			'accordion-up': 'accordion-up 0.2s ease-out',
+        'float': 'float 6s ease-in-out infinite',
+        'pulse-glow': 'pulse-glow 3s ease-in-out infinite',
+        'shine': 'shine 6s linear infinite',
+        'shimmer': 'shimmer 1.5s ease-in-out infinite',
+  		},
+      backgroundImage: {
+        'gradient-radial-blue': 'radial-gradient(circle at center, rgba(59, 130, 246, 0.15), transparent 70%)',
+        'gradient-radial-indigo': 'radial-gradient(circle at center, rgba(99, 102, 241, 0.15), transparent 70%)',
+        'gradient-conic': 'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+      },
+      boxShadow: {
+        'glow-blue': '0 0 15px rgba(59, 130, 246, 0.3), 0 0 30px rgba(59, 130, 246, 0.2)',
+        'soft': '0 8px 30px rgba(0, 0, 0, 0.12)',
+      },
   	}
   },
   plugins: [require("tailwindcss-animate")],

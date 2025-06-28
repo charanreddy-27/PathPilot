@@ -22,15 +22,15 @@ export default function ChatMessage({ message }: ChatMessageProps) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className={`flex mb-4 ${isUser ? "justify-end" : "justify-start"}`}
+      className={`group flex mb-6 last:mb-2 ${isUser ? "justify-end" : "justify-start"}`}
     >
-      <div className={`flex max-w-[80%] ${isUser ? "flex-row-reverse" : "flex-row"}`}>
-        <div className={`flex-shrink-0 flex items-start ${isUser ? "ml-2" : "mr-2"}`}>
+      <div className={`flex max-w-[85%] ${isUser ? "flex-row-reverse" : "flex-row"}`}>
+        <div className={`flex-shrink-0 flex items-start mt-1 ${isUser ? "ml-3" : "mr-3"}`}>
           <div
-            className={`w-8 h-8 rounded-full flex items-center justify-center ${
+            className={`w-8 h-8 rounded-full flex items-center justify-center transition-transform group-hover:scale-110 ${
               isUser
-                ? "bg-blue-900/50 text-blue-400 border border-blue-700 shadow-[0_0_10px_rgba(59,130,246,0.3)]"
-                : "bg-purple-900/50 text-purple-400 border border-purple-700 shadow-[0_0_10px_rgba(139,92,246,0.3)]"
+                ? "bg-blue-600/20 text-blue-400 border border-blue-500/30"
+                : "bg-purple-600/20 text-purple-400 border border-purple-500/30"
             }`}
           >
             {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
@@ -38,13 +38,18 @@ export default function ChatMessage({ message }: ChatMessageProps) {
         </div>
 
         <div
-          className={`p-3 rounded-lg ${
+          className={`p-3 rounded-2xl text-sm md:text-base ${
             isUser
-              ? "bg-gradient-to-r from-blue-600/80 to-blue-700/80 text-white rounded-tr-none border border-blue-700/50"
-              : "bg-gray-800/80 border border-gray-700 text-gray-200 rounded-tl-none"
+              ? "bg-blue-600 text-white rounded-br-none"
+              : "bg-gray-800/70 text-gray-100 rounded-bl-none border border-gray-700/50"
           }`}
         >
-          <p className={isUser ? "text-white" : "text-gray-200"}>{message.content}</p>
+          <p className="whitespace-pre-wrap">{message.content}</p>
+          
+          {/* Message time - could be implemented with actual timestamps */}
+          <div className={`text-xs mt-1 opacity-50 text-right ${isUser ? "text-blue-200" : "text-gray-400"}`}>
+            {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </div>
         </div>
       </div>
     </motion.div>

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu, X, Sparkles, User, LogOut } from "lucide-react"
+import { Menu, X, BrainCircuit } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/contexts/AuthContext"
 import { useMobile } from "@/hooks/use-mobile"
@@ -18,7 +18,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 10)
+      setScrolled(window.scrollY > 20)
     }
 
     window.addEventListener("scroll", handleScroll)
@@ -28,21 +28,22 @@ export default function Navbar() {
   const toggleMenu = () => setIsOpen(!isOpen)
   const closeMenu = () => setIsOpen(false)
 
+  // Simplified navigation - just Home and Chat
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "/chat", label: "Chat" },
-    { href: "/about", label: "About" },
-    { href: "/contact", label: "Contact" },
   ]
 
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled ? "bg-gray-950/80 backdrop-blur-md border-b border-gray-800" : "bg-transparent"
+        scrolled 
+          ? "bg-gray-900/80 backdrop-blur-lg shadow-md shadow-gray-900/20 border-b border-gray-800/30" 
+          : "bg-transparent"
       }`}
     >
       <div className="container px-4 mx-auto">
-        <div className="flex items-center justify-between h-16 md:h-20">
+        <div className="flex items-center justify-between h-16 md:h-18">
           <Link href="/" className="flex items-center space-x-2 group">
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
@@ -50,70 +51,79 @@ export default function Navbar() {
               transition={{ duration: 0.5 }}
               className="relative"
             >
-              <span className="absolute -inset-1 rounded-full blur-md bg-gradient-to-r from-blue-600 to-purple-600 opacity-70 group-hover:opacity-100 transition duration-300"></span>
-              <span className="relative flex items-center justify-center w-8 h-8 bg-gray-900 rounded-full border border-gray-700 text-white">
-                <Sparkles className="w-4 h-4 text-blue-400" />
-              </span>
+              <div className="absolute -inset-1 rounded-full blur-md bg-gradient-to-r from-blue-600 to-indigo-600 opacity-70 group-hover:opacity-100 transition duration-300"></div>
+              <div className="relative flex items-center justify-center w-8 h-8 bg-gray-900 rounded-full border border-gray-700 text-white">
+                <BrainCircuit className="w-4 h-4 text-blue-400" />
+              </div>
             </motion.div>
-            <span className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+            <span className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">
               PathPilot
             </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`text-sm font-medium transition-colors ${
-                  pathname === link.href
-                    ? "text-blue-400"
-                    : "text-gray-400 hover:text-gray-200"
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+          <nav className="hidden md:flex items-center space-x-10">
+            <div className="flex items-center space-x-8">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`relative font-medium text-sm group transition-colors ${
+                    pathname === link.href
+                      ? "text-white"
+                      : "text-gray-400 hover:text-white"
+                  }`}
+                >
+                  {link.label}
+                  {pathname === link.href && (
+                    <motion.span 
+                      layoutId="navbar-indicator"
+                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-blue-500"
+                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                    />
+                  )}
+                </Link>
+              ))}
+            </div>
             
-            {user ? (
-              <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-400">
-                  Welcome, {user.name}
-                </span>
+            <div className="flex items-center">
+              {user ? (
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
                   onClick={logout}
-                  className="text-gray-400 hover:text-gray-200"
+                  className="border-gray-800 hover:border-gray-700 text-gray-300 hover:text-white rounded-lg"
                 >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Logout
+                  Log out
                 </Button>
-              </div>
-            ) : (
-              <div className="flex items-center space-x-4">
+              ) : (
                 <Link href="/login">
-                  <Button variant="ghost" size="sm">
+                  <Button 
+                    size="sm"
+                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg"
+                  >
                     Login
                   </Button>
                 </Link>
-                <Link href="/register">
-                  <Button size="sm">
-                    Register
-                  </Button>
-                </Link>
-              </div>
-            )}
+              )}
+            </div>
           </nav>
 
           {/* Mobile Menu Button */}
-          <button
-            onClick={toggleMenu}
-            className="md:hidden p-2 text-gray-400 hover:text-gray-200"
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          <div className="md:hidden flex items-center">
+            {user ? (
+              <span className="text-sm text-gray-400 mr-4">
+                {user.name?.split(' ')[0]}
+              </span>
+            ) : null}
+            <button
+              onClick={toggleMenu}
+              className="p-2 text-gray-400 hover:text-gray-200 focus:outline-none"
+              aria-label="Toggle menu"
+            >
+              {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Navigation */}
@@ -123,6 +133,7 @@ export default function Navbar() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
               className="md:hidden overflow-hidden"
             >
               <div className="py-4 space-y-4">
@@ -131,7 +142,7 @@ export default function Navbar() {
                     key={link.href}
                     href={link.href}
                     onClick={closeMenu}
-                    className={`block text-sm font-medium transition-colors ${
+                    className={`block text-base font-medium transition-colors ${
                       pathname === link.href
                         ? "text-blue-400"
                         : "text-gray-400 hover:text-gray-200"
@@ -141,38 +152,30 @@ export default function Navbar() {
                   </Link>
                 ))}
                 
-                {user ? (
-                  <>
-                    <div className="text-sm text-gray-400 py-2 border-t border-gray-800">
-                      Welcome, {user.name}
-                    </div>
+                <div className="pt-4 border-t border-gray-800">
+                  {user ? (
                     <Button
-                      variant="ghost"
+                      variant="outline"
                       size="sm"
                       onClick={() => {
                         logout();
                         closeMenu();
                       }}
-                      className="w-full text-left text-gray-400 hover:text-gray-200"
+                      className="w-full border-gray-800 hover:border-gray-700 text-gray-300"
                     >
-                      <LogOut className="w-4 h-4 mr-2" />
-                      Logout
+                      Log out
                     </Button>
-                  </>
-                ) : (
-                  <div className="space-y-2 pt-4 border-t border-gray-800">
+                  ) : (
                     <Link href="/login" onClick={closeMenu}>
-                      <Button variant="ghost" size="sm" className="w-full">
+                      <Button 
+                        size="sm" 
+                        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600"
+                      >
                         Login
                       </Button>
                     </Link>
-                    <Link href="/register" onClick={closeMenu}>
-                      <Button size="sm" className="w-full">
-                        Register
-                      </Button>
-                    </Link>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </motion.nav>
           )}
