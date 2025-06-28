@@ -5,16 +5,11 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X, BrainCircuit } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useAuth } from "@/contexts/AuthContext"
-import { useMobile } from "@/hooks/use-mobile"
 
 export default function Navbar() {
   const pathname = usePathname()
-  const isMobile = useMobile()
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const { user, logout } = useAuth()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -85,45 +80,16 @@ export default function Navbar() {
                 </Link>
               ))}
             </div>
-            
-            <div className="flex items-center">
-              {user ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={logout}
-                  className="border-gray-800 hover:border-gray-700 text-gray-300 hover:text-white rounded-lg"
-                >
-                  Log out
-                </Button>
-              ) : (
-                <Link href="/login">
-                  <Button 
-                    size="sm"
-                    className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg"
-                  >
-                    Login
-                  </Button>
-                </Link>
-              )}
-            </div>
           </nav>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center">
-            {user ? (
-              <span className="text-sm text-gray-400 mr-4">
-                {user.name?.split(' ')[0]}
-              </span>
-            ) : null}
-            <button
-              onClick={toggleMenu}
-              className="p-2 text-gray-400 hover:text-gray-200 focus:outline-none"
-              aria-label="Toggle menu"
-            >
-              {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
+          <button
+            onClick={toggleMenu}
+            className="md:hidden p-2 text-gray-400 hover:text-gray-200 focus:outline-none"
+            aria-label="Toggle menu"
+          >
+            {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
         </div>
 
         {/* Mobile Navigation */}
@@ -151,31 +117,6 @@ export default function Navbar() {
                     {link.label}
                   </Link>
                 ))}
-                
-                <div className="pt-4 border-t border-gray-800">
-                  {user ? (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        logout();
-                        closeMenu();
-                      }}
-                      className="w-full border-gray-800 hover:border-gray-700 text-gray-300"
-                    >
-                      Log out
-                    </Button>
-                  ) : (
-                    <Link href="/login" onClick={closeMenu}>
-                      <Button 
-                        size="sm" 
-                        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600"
-                      >
-                        Login
-                      </Button>
-                    </Link>
-                  )}
-                </div>
               </div>
             </motion.nav>
           )}
