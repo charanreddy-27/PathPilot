@@ -21,6 +21,20 @@ const nextConfig = {
       },
     ]
   },
+  // Performance optimizations
+  swcMinify: true,
+  reactStrictMode: true,
+  // Improved production builds
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production' ? {
+      exclude: ['error', 'warn'],
+    } : false,
+  },
+  // Optimize page loading
+  experimental: {
+    optimizeCss: true,
+    optimizePackageImports: ['framer-motion', 'lucide-react'],
+  },
 }
 
 export default nextConfig

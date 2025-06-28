@@ -3,8 +3,8 @@ import { Github, ExternalLink, Compass } from "lucide-react"
 
 export default function Footer() {
   return (
-    <footer className="py-8 mt-10 w-full">
-      <div className="container px-4 mx-auto">
+    <footer className="py-12 mt-10 w-full border-t border-border/20">
+      <div className="container px-6 md:px-8 mx-auto">
         <div className="flex flex-col items-center w-full">
           {/* Logo */}
           <div className="flex items-center space-x-2 mb-6">
@@ -14,18 +14,8 @@ export default function Footer() {
             <span className="text-sm font-medium tracking-wide text-primary">PathPilot</span>
           </div>
 
-          {/* Links */}
-          <div className="flex space-x-10 mb-8">
-            <Link href="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Home
-            </Link>
-            <Link href="/chat" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Chat
-            </Link>
-          </div>
-
           {/* Attribution */}
-          <div className="text-xs text-muted-foreground/70 flex items-center flex-wrap justify-center gap-2 mb-4 w-full">
+          <div className="text-xs text-muted-foreground/70 flex items-center flex-wrap justify-center gap-3 mb-4 w-full">
             <span>© {new Date().getFullYear()} PathPilot AI</span>
             <span className="block w-1 h-1 rounded-full bg-border"></span>
             <span>Built with Next.js and Tailwind</span>

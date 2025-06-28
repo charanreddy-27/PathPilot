@@ -73,6 +73,18 @@
   body {
     @apply bg-background text-foreground;
   }
+  /* Improved link styling */
+  a {
+    @apply transition-colors duration-200;
+  }
+  /* Better focus styles for accessibility */
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary/50 ring-offset-2 ring-offset-background;
+  }
+  /* Smooth scrolling for the whole page */
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 /* Custom scrollbar */
@@ -94,15 +106,15 @@
   background: rgba(75, 85, 99, 0.6);
 }
 
-/* Elegant shadow effect */
-.elegant-shadow {
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 
-              0 8px 10px -6px rgba(0, 0, 0, 0.01);
+/* Elegant shadow effects */
+.shadow-elegant {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 
+              0 8px 10px -6px rgba(0, 0, 0, 0.03);
 }
 
-.elegant-shadow-sm {
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 
-              0 2px 4px -1px rgba(0, 0, 0, 0.01);
+.shadow-elegant-sm {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 
+              0 2px 4px -1px rgba(0, 0, 0, 0.03);
 }
 
 /* Glass effect */
@@ -124,4 +136,57 @@
 
 .animate-gentle-float {
   animation: gentle-float 4s ease-in-out infinite;
+}
+
+/* Text gradient effect */
+.text-gradient {
+  background: linear-gradient(to right, #3b82f6, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+}
+
+/* Container improvements */
+.container {
+  @apply px-4 md:px-6 lg:px-8 mx-auto;
+  max-width: 1280px;
+}
+
+/* Button hover effects */
+button, .button {
+  @apply transition-all duration-200;
+}
+
+/* Card hover effects */
+.card-hover {
+  @apply transition-all duration-300 hover:shadow-elegant hover:-translate-y-1;
+}
+
+/* Improved responsive text sizing */
+h1, .h1 {
+  @apply text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight;
+}
+
+h2, .h2 {
+  @apply text-2xl md:text-3xl lg:text-4xl font-medium tracking-tight;
+}
+
+h3, .h3 {
+  @apply text-xl md:text-2xl font-medium tracking-tight;
+}
+
+/* Improved spacing utilities */
+.section {
+  @apply py-12 md:py-16 lg:py-20;
+}
+
+/* Better form element styling */
+input, textarea, select {
+  @apply transition-all duration-200;
+}
+
+/* Image styling */
+img {
+  @apply max-w-full h-auto;
 }

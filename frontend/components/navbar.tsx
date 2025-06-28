@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X, Compass } from "lucide-react"
 import { useMobile } from "@/hooks/use-mobile"
 
 export default function Navbar() {
   const pathname = usePathname()
+  const router = useRouter()
   const isMobile = useMobile()
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
@@ -31,19 +32,30 @@ export default function Navbar() {
     { href: "/chat", label: "Chat" },
   ]
 
+  // Handle navigation with proper client-side routing
+  const handleNavigation = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault()
+    closeMenu()
+    router.push(href)
+  }
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled 
-          ? "bg-background/80 backdrop-blur-xl shadow-elegant-sm border-b border-border/40" 
+          ? "bg-background/90 backdrop-blur-xl shadow-elegant-sm border-b border-border/40" 
           : "bg-transparent"
       }`}
     >
-      <div className="container px-4 mx-auto">
-        <div className="flex items-center justify-between h-16 md:h-18 w-full">
-          <Link href="/" className="flex items-center space-x-3 group">
+      <div className="container mx-auto px-6 md:px-8">
+        <div className="flex items-center justify-between h-16 w-full">
+          <Link 
+            href="/" 
+            onClick={(e) => handleNavigation(e, "/")}
+            className="flex items-center space-x-3 group"
+          >
             <div className="flex items-center justify-center w-9 h-9 bg-primary/10 rounded-full shadow-elegant-sm border border-primary/10">
-              <Compass className="w-5 h-5 text-primary" strokeWidth={2} />
+              <Compass className="w-4.5 h-4.5 text-primary" strokeWidth={2} />
             </div>
             <span className="text-lg font-medium tracking-wide text-foreground">
               PathPilot
@@ -52,15 +64,16 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center">
-            <div className="flex items-center space-x-8">
+            <div className="flex items-center space-x-10">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`relative font-medium text-sm tracking-wide transition-colors ${
+                  onClick={(e) => handleNavigation(e, link.href)}
+                  className={`relative font-medium text-base tracking-wide transition-colors hover:text-primary ${
                     pathname === link.href
                       ? "text-primary"
-                      : "text-muted-foreground hover:text-foreground"
+                      : "text-muted-foreground"
                   }`}
                 >
                   {link.label}
@@ -98,13 +111,13 @@ export default function Navbar() {
               transition={{ duration: 0.3 }}
               className="overflow-hidden glass-effect rounded-xl mt-2 shadow-elegant w-full"
             >
-              <div className="py-4 space-y-4 px-4 w-full">
+              <div className="py-4 space-y-3 px-4 w-full">
                 {navLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
-                    onClick={closeMenu}
-                    className={`block text-base font-medium transition-colors py-2 px-3 rounded-lg w-full ${
+                    onClick={(e) => handleNavigation(e, link.href)}
+                    className={`block text-base font-medium transition-colors py-2.5 px-3 rounded-lg w-full text-center ${
                       pathname === link.href
                         ? "text-primary bg-primary/5"
                         : "text-muted-foreground hover:text-foreground hover:bg-accent/10"

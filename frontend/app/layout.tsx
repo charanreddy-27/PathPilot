@@ -5,11 +5,13 @@ import { ThemeProvider } from "@/lib/theme-provider"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 
-// Using a clean, modern sans-serif font
+// Using a clean, modern sans-serif font with optimized loading
 const inter = Inter({ 
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-sans'
+  variable: '--font-sans',
+  weight: ['400', '500', '600', '700'],
+  preload: true,
 })
 
 export const metadata: Metadata = {
@@ -27,8 +29,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning className="h-full">
-      <body className={`${inter.variable} font-sans bg-background text-foreground antialiased flex flex-col min-h-screen`}>
+    <html lang="en" suppressHydrationWarning className="h-full scroll-smooth">
+      <body className={`${inter.variable} font-sans bg-background text-foreground antialiased flex flex-col min-h-screen selection:bg-primary/20 selection:text-primary`}>
         <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark">
           <div className="flex flex-col min-h-screen w-full">
             <Navbar />
