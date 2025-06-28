@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from "react"
 
+/**
+ * Hook to detect if the current viewport is mobile
+ */
 export function useMobile() {
   const [isMobile, setIsMobile] = useState(false)
 
@@ -21,4 +24,4 @@ export function useMobile() {
   }, [])
 
   return isMobile
-}
+} 

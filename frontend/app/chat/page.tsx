@@ -2,11 +2,8 @@
 
 import { useState, useRef, useEffect } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { Send, Sparkles, Bot, Zap } from "lucide-react"
+import { Send, Sparkles, Bot, Zap, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import ChatMessage from "@/components/chat-message"
-import TypingIndicator from "@/components/typing-indicator"
-import ParticleBackground from "@/components/particle-background"
 
 // Types for our chat messages
 type MessageRole = "user" | "bot"
@@ -15,6 +12,86 @@ interface Message {
   id: string
   content: string
   role: MessageRole
+}
+
+// Chat Message Component (inline for better performance)
+function ChatMessage({ message }: { message: Message }) {
+  const isUser = message.role === "user"
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3 }}
+      className={`group flex mb-6 last:mb-2 ${isUser ? "justify-end" : "justify-start"}`}
+    >
+      <div className={`flex max-w-[85%] ${isUser ? "flex-row-reverse" : "flex-row"}`}>
+        <div className={`flex-shrink-0 flex items-start mt-1 ${isUser ? "ml-3" : "mr-3"}`}>
+          <div
+            className={`w-8 h-8 rounded-full flex items-center justify-center transition-transform group-hover:scale-110 ${
+              isUser
+                ? "bg-blue-600/20 text-blue-400 border border-blue-500/30"
+                : "bg-purple-600/20 text-purple-400 border border-purple-500/30"
+            }`}
+          >
+            {isUser ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+          </div>
+        </div>
+
+        <div
+          className={`p-3 rounded-2xl text-sm md:text-base ${
+            isUser
+              ? "bg-blue-600 text-white rounded-br-none"
+              : "bg-gray-800/70 text-gray-100 rounded-bl-none border border-gray-700/50"
+          }`}
+        >
+          <p className="whitespace-pre-wrap">{message.content}</p>
+          
+          {/* Message time - could be implemented with actual timestamps */}
+          <div className={`text-xs mt-1 opacity-50 text-right ${isUser ? "text-blue-200" : "text-gray-400"}`}>
+            {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  )
+}
+
+// Typing Indicator Component (inline for better performance)
+function TypingIndicator() {
+  return (
+    <div className="flex mb-6 justify-start">
+      <div className="flex max-w-[85%] flex-row">
+        <div className="flex-shrink-0 flex items-start mt-1 mr-3">
+          <div className="w-8 h-8 rounded-full flex items-center justify-center bg-purple-600/20 text-purple-400 border border-purple-500/30">
+            <Bot className="w-4 h-4" />
+          </div>
+        </div>
+
+        <div className="p-3 rounded-2xl bg-gray-800/70 border border-gray-700/50 text-gray-100 rounded-bl-none">
+          <div className="flex items-center space-x-1.5">
+            {[0, 1, 2].map((i) => (
+              <motion.div
+                key={i}
+                className="w-2 h-2 rounded-full bg-purple-400/80"
+                animate={{
+                  scale: [1, 1.2, 1],
+                  opacity: [0.6, 1, 0.6]
+                }}
+                transition={{
+                  duration: 1.2,
+                  repeat: Number.POSITIVE_INFINITY,
+                  repeatType: "loop",
+                  delay: i * 0.15,
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default function ChatPage() {
@@ -130,100 +207,97 @@ export default function ChatPage() {
   }
 
   return (
-    <>
-      <ParticleBackground />
-      <div className="flex flex-col min-h-screen">
-        <div className="flex-grow container mx-auto px-4 py-6 max-w-5xl">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex flex-col h-[calc(100vh-6rem)] bg-gray-900/30 backdrop-blur-md rounded-2xl overflow-hidden border border-gray-800/50 shadow-lg"
-          >
-            {/* Chat Header */}
-            <div className="p-4 border-b border-gray-800/50 bg-gradient-to-r from-gray-900/80 to-gray-800/80">
-              <div className="flex items-center">
-                <div className="flex items-center justify-center h-10 w-10 rounded-full bg-blue-600/20 border border-blue-500/30 mr-3">
-                  <Bot className="h-5 w-5 text-blue-400" />
-                </div>
-                <div>
-                  <h1 className="text-lg font-semibold text-white">Career Counselor</h1>
-                  <div className="flex items-center text-xs text-green-400">
-                    <span className="h-2 w-2 rounded-full bg-green-400 mr-1.5"></span>
-                    Online and ready to assist
-                  </div>
+    <div className="flex flex-col min-h-screen">
+      <div className="flex-grow container mx-auto px-4 py-6 max-w-5xl">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex flex-col h-[calc(100vh-6rem)] bg-gray-900/30 backdrop-blur-md rounded-2xl overflow-hidden border border-gray-800/50 shadow-lg"
+        >
+          {/* Chat Header */}
+          <div className="p-4 border-b border-gray-800/50 bg-gradient-to-r from-gray-900/80 to-gray-800/80">
+            <div className="flex items-center">
+              <div className="flex items-center justify-center h-10 w-10 rounded-full bg-blue-600/20 border border-blue-500/30 mr-3">
+                <Bot className="h-5 w-5 text-blue-400" />
+              </div>
+              <div>
+                <h1 className="text-lg font-semibold text-white">Career Counselor</h1>
+                <div className="flex items-center text-xs text-green-400">
+                  <span className="h-2 w-2 rounded-full bg-green-400 mr-1.5"></span>
+                  Online and ready to assist
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Messages Container */}
-            <div className="flex-grow overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent p-4 bg-gradient-to-b from-transparent to-gray-900/20">
-              <AnimatePresence initial={false}>
-                {messages.map((message) => (
-                  <ChatMessage key={message.id} message={message} />
-                ))}
-              </AnimatePresence>
+          {/* Messages Container */}
+          <div className="flex-grow overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent p-4 bg-gradient-to-b from-transparent to-gray-900/20">
+            <AnimatePresence initial={false}>
+              {messages.map((message) => (
+                <ChatMessage key={message.id} message={message} />
+              ))}
+            </AnimatePresence>
 
-              {isTyping && <TypingIndicator />}
-              <div ref={messagesEndRef} />
+            {isTyping && <TypingIndicator />}
+            <div ref={messagesEndRef} />
+          </div>
+          
+          {/* Suggested Prompts */}
+          <div className="px-4 py-3 bg-gray-900/50 border-t border-gray-800/50">
+            <div className="flex items-center mb-2">
+              <Sparkles className="h-4 w-4 text-blue-400 mr-2" />
+              <span className="text-sm text-gray-400">Suggested questions</span>
             </div>
-            
-            {/* Suggested Prompts */}
-            <div className="px-4 py-3 bg-gray-900/50 border-t border-gray-800/50">
-              <div className="flex items-center mb-2">
-                <Sparkles className="h-4 w-4 text-blue-400 mr-2" />
-                <span className="text-sm text-gray-400">Suggested questions</span>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {prebuiltPrompts.map((prompt, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handlePromptClick(prompt)}
-                    disabled={isTyping}
-                    className="px-3 py-1.5 text-sm bg-gray-800/70 hover:bg-gray-700/70 text-gray-300 rounded-lg border border-gray-700/50 transition-colors"
-                  >
-                    {prompt}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Input Area */}
-            <form onSubmit={handleSubmit} className="p-4 bg-gray-900/70 border-t border-gray-800/50">
-              <div className="flex items-end space-x-2 bg-gray-800/50 rounded-lg border border-gray-700/50 transition-all focus-within:border-blue-500/50 focus-within:shadow-[0_0_10px_rgba(59,130,246,0.2)]">
-                <textarea
-                  ref={inputRef}
-                  value={input}
-                  onChange={handleTextareaChange}
-                  onKeyDown={handleKeyPress}
-                  placeholder="Ask your career questions..."
-                  rows={1}
+            <div className="flex flex-wrap gap-2">
+              {prebuiltPrompts.map((prompt, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handlePromptClick(prompt)}
                   disabled={isTyping}
-                  className="flex-grow resize-none max-h-[150px] overflow-auto scrollbar-thin scrollbar-thumb-gray-700 m-0 w-full bg-transparent px-4 py-3 text-gray-100 focus:outline-none"
-                  style={{ height: "auto" }}
-                />
-                <div className="pr-2 pb-2">
-                  <Button
-                    type="submit"
-                    disabled={!input.trim() || isTyping}
-                    size="sm"
-                    className="h-8 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
-                  >
-                    <Send className="h-4 w-4" />
-                  </Button>
-                </div>
+                  className="px-3 py-1.5 text-sm bg-gray-800/70 hover:bg-gray-700/70 text-gray-300 rounded-lg border border-gray-700/50 transition-colors"
+                >
+                  {prompt}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Input Area */}
+          <form onSubmit={handleSubmit} className="p-4 bg-gray-900/70 border-t border-gray-800/50">
+            <div className="flex items-end space-x-2 bg-gray-800/50 rounded-lg border border-gray-700/50 transition-all focus-within:border-blue-500/50 focus-within:shadow-[0_0_10px_rgba(59,130,246,0.2)]">
+              <textarea
+                ref={inputRef}
+                value={input}
+                onChange={handleTextareaChange}
+                onKeyDown={handleKeyPress}
+                placeholder="Ask your career questions..."
+                rows={1}
+                disabled={isTyping}
+                className="flex-grow resize-none max-h-[150px] overflow-auto scrollbar-thin scrollbar-thumb-gray-700 m-0 w-full bg-transparent px-4 py-3 text-gray-100 focus:outline-none"
+                style={{ height: "auto" }}
+              />
+              <div className="pr-2 pb-2">
+                <Button
+                  type="submit"
+                  disabled={!input.trim() || isTyping}
+                  size="sm"
+                  className="h-8 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+                >
+                  <Send className="h-4 w-4" />
+                </Button>
               </div>
-              <div className="mt-2 text-xs text-gray-500 flex items-center justify-between">
-                <span>Press Enter to send, Shift+Enter for new line</span>
-                <div className="flex items-center">
-                  <Zap className="h-3 w-3 text-blue-400 mr-1" />
-                  <span>Powered by AI</span>
-                </div>
+            </div>
+            <div className="mt-2 text-xs text-gray-500 flex items-center justify-between">
+              <span>Press Enter to send, Shift+Enter for new line</span>
+              <div className="flex items-center">
+                <Zap className="h-3 w-3 text-blue-400 mr-1" />
+                <span>Powered by AI</span>
               </div>
-            </form>
-          </motion.div>
-        </div>
+            </div>
+          </form>
+        </motion.div>
       </div>
-    </>
+    </div>
   )
 }
