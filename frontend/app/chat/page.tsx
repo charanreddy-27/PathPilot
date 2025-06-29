@@ -1,8 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { AnimatePresence, motion } from "framer-motion"
-import { SendHorizontal, Bot, User, Loader2 } from "lucide-react"
+import { SendHorizontal, Bot, User, Loader2, Sparkles, ChevronRight, CornerDownLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
@@ -13,6 +12,13 @@ type Message = {
   text: string
   sender: "user" | "bot"
   timestamp: Date
+}
+
+// Define suggested prompt type
+type SuggestedPrompt = {
+  id: string
+  text: string
+  icon?: React.ReactNode
 }
 
 export default function ChatPage() {
@@ -27,10 +33,35 @@ export default function ChatPage() {
   ])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [showSuggestions, setShowSuggestions] = useState(true)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const chatContainerRef = useRef<HTMLDivElement>(null)
   const { toast } = useToast()
+
+  // Suggested prompts
+  const suggestedPrompts: SuggestedPrompt[] = [
+    { 
+      id: "career-change", 
+      text: "How do I transition to a career in tech?",
+      icon: <Sparkles className="w-3.5 h-3.5" />
+    },
+    { 
+      id: "resume-tips", 
+      text: "Help me improve my resume",
+      icon: <Sparkles className="w-3.5 h-3.5" />
+    },
+    { 
+      id: "interview-prep", 
+      text: "How should I prepare for a job interview?",
+      icon: <Sparkles className="w-3.5 h-3.5" />
+    },
+    { 
+      id: "skill-assessment", 
+      text: "What skills should I develop for my career?",
+      icon: <Sparkles className="w-3.5 h-3.5" />
+    },
+  ]
 
   // Auto-scroll to bottom when messages change
   useEffect(() => {
@@ -69,54 +100,80 @@ export default function ChatPage() {
     setMessages((prev) => [...prev, userMessage])
     setInput("")
     setIsLoading(true)
+    setShowSuggestions(false)
 
     try {
-      // Simulate API call for now - replace with actual API call when backend is ready
-      setTimeout(() => {
-        // Add bot response to chat
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: Date.now().toString(),
-            text: "I'm here to help with your career journey. What specific aspect of your career would you like guidance on today?",
-            sender: "bot",
-            timestamp: new Date(),
-          },
-        ])
-        setIsLoading(false)
-      }, 1000)
-
-      // Uncomment this when API is ready
-      /*
       // Send message to API
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({ 
+          messages: [
+            { role: "user", content: input }
+          ] 
+        }),
       })
 
       if (!response.ok) {
         throw new Error("Failed to get response")
       }
 
-      const data = await response.json()
+      const reader = response.body?.getReader()
+      let botResponse = ""
 
-      // Add bot response to chat
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: Date.now().toString(),
-          text: data.response || "I'm having trouble processing that right now. Please try again.",
-          sender: "bot",
-          timestamp: new Date(),
-        },
-      ])
-      */
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read()
+          
+          if (done) break
+          
+          // Convert the Uint8Array to a string
+          const chunk = new TextDecoder().decode(value)
+          botResponse += chunk
+          
+          // Update the message in real-time
+          setMessages((prev) => {
+            const lastMessage = prev.find(m => m.sender === "bot" && m.id === "streaming")
+            
+            if (lastMessage) {
+              return prev.map(m => 
+                m.id === "streaming" 
+                  ? { ...m, text: botResponse } 
+                  : m
+              )
+            } else {
+              return [
+                ...prev, 
+                {
+                  id: "streaming",
+                  text: botResponse,
+                  sender: "bot",
+                  timestamp: new Date()
+                }
+              ]
+            }
+          })
+        }
+
+        // Finalize the message with a proper ID once streaming is complete
+        setMessages((prev) => {
+          const withoutStreaming = prev.filter(m => m.id !== "streaming")
+          return [
+            ...withoutStreaming,
+            {
+              id: Date.now().toString(),
+              text: botResponse,
+              sender: "bot",
+              timestamp: new Date()
+            }
+          ]
+        })
+      }
     } catch (error) {
       console.error("Error:", error)
-      toast("Failed to get a response. Please try again.")
+      toast("Failed to get a response. Please try again.", "error")
 
       // Add error message from bot
       setMessages((prev) => [
@@ -129,97 +186,137 @@ export default function ChatPage() {
         },
       ])
     } finally {
-      // setIsLoading(false) // Uncomment when using real API
+      setIsLoading(false)
     }
   }
 
+  // Handle clicking a suggested prompt
+  const handleSuggestedPrompt = (prompt: string) => {
+    setInput(prompt)
+    inputRef.current?.focus()
+  }
+
   return (
-    <div className="flex flex-col w-full min-h-[calc(100vh-5rem)] pt-16 pb-4 px-4 md:px-6">
-      <div className="w-full max-w-3xl mx-auto flex flex-col flex-grow">
+    <div className="flex flex-col w-full min-h-[calc(100vh-5rem)] pt-12 pb-4 px-4 md:px-6 bg-background">
+      <div className="w-full max-w-4xl mx-auto flex flex-col flex-grow">
         {/* Chat header */}
-        <div className="mb-4 text-center">
-          <h1 className="text-xl md:text-2xl font-medium mb-1">PathPilot Chat</h1>
-          <p className="text-muted-foreground text-sm">Your AI career counselor is ready to help</p>
+        <div className="mb-6 text-center">
+          <h1 className="text-2xl md:text-3xl font-bold mb-2 text-primary">
+            PathPilot Chat
+          </h1>
+          <p className="text-muted-foreground text-sm md:text-base">
+            Your AI career counselor is ready to guide your professional journey
+          </p>
         </div>
 
         {/* Messages container */}
         <div 
           ref={chatContainerRef}
-          className="flex-grow overflow-y-auto rounded-xl p-3 md:p-4 bg-background/30 backdrop-blur-sm border border-border/30 shadow-elegant mb-4"
+          className="flex-grow overflow-y-auto rounded-xl p-4 md:p-6 bg-background/30 backdrop-blur-sm border border-border/30 shadow-lg mb-4"
+          style={{ 
+            boxShadow: "0 4px 24px -8px rgba(0,0,0,0.1), 0 1px 6px -2px rgba(0,0,0,0.06)" 
+          }}
         >
-          <div className="space-y-4">
-            <AnimatePresence initial={false}>
-              {messages.map((message) => (
-                <motion.div
-                  key={message.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className={`flex ${
-                    message.sender === "user" ? "justify-end" : "justify-start"
+          <div className="space-y-6">
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={`flex ${
+                  message.sender === "user" ? "justify-end" : "justify-start"
+                }`}
+              >
+                <div
+                  className={`flex max-w-[85%] md:max-w-[75%] items-start gap-3 ${
+                    message.sender === "user" ? "flex-row-reverse" : ""
                   }`}
                 >
                   <div
-                    className={`flex max-w-[85%] md:max-w-[70%] items-start gap-2 ${
-                      message.sender === "user" ? "flex-row-reverse" : ""
+                    className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
+                      message.sender === "user"
+                        ? "bg-primary/15 text-primary"
+                        : "bg-blue-500/15 text-blue-500"
                     }`}
                   >
-                    <div
-                      className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center ${
-                        message.sender === "user"
-                          ? "bg-primary/10 text-primary"
-                          : "bg-muted text-foreground"
-                      }`}
-                    >
-                      {message.sender === "user" ? (
-                        <User className="w-3.5 h-3.5" />
-                      ) : (
-                        <Bot className="w-3.5 h-3.5" />
-                      )}
-                    </div>
-
-                    <div
-                      className={`rounded-2xl px-3 py-2 shadow-elegant-sm ${
-                        message.sender === "user"
-                          ? "bg-primary text-primary-foreground rounded-tr-sm"
-                          : "bg-card text-card-foreground rounded-tl-sm"
-                      }`}
-                    >
-                      <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                        {message.text}
-                      </p>
-                    </div>
+                    {message.sender === "user" ? (
+                      <User className="w-4 h-4" />
+                    ) : (
+                      <Bot className="w-4 h-4" />
+                    )}
                   </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
 
-            {/* Loading indicator */}
-            {isLoading && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex justify-start"
-              >
-                <div className="flex max-w-[85%] md:max-w-[70%] items-start gap-2">
-                  <div className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center bg-muted text-foreground">
-                    <Bot className="w-3.5 h-3.5" />
-                  </div>
-                  <div className="rounded-2xl px-3 py-2 bg-card text-card-foreground rounded-tl-sm shadow-elegant-sm">
-                    <div className="flex items-center space-x-2">
-                      <Loader2 className="w-3.5 h-3.5 animate-spin text-muted-foreground" />
-                      <span className="text-xs text-muted-foreground">Thinking...</span>
+                  <div
+                    className={`rounded-2xl px-4 py-3 shadow-md ${
+                      message.sender === "user"
+                        ? "bg-primary text-primary-foreground rounded-tr-sm"
+                        : "bg-card text-card-foreground rounded-tl-sm border border-border/50"
+                    }`}
+                    style={{
+                      boxShadow: message.sender === "user" 
+                        ? "0 2px 8px -2px rgba(0,0,0,0.1)" 
+                        : "0 2px 8px -2px rgba(0,0,0,0.05)"
+                    }}
+                  >
+                    <p className="text-sm md:text-base leading-relaxed whitespace-pre-wrap">
+                      {message.text}
+                    </p>
+                    <div className="mt-1 text-[10px] opacity-60 text-right">
+                      {new Intl.DateTimeFormat('en-US', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      }).format(message.timestamp)}
                     </div>
                   </div>
                 </div>
-              </motion.div>
+              </div>
+            ))}
+
+            {/* Loading indicator */}
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className="flex max-w-[85%] md:max-w-[75%] items-start gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-blue-500/15 text-blue-500">
+                    <Bot className="w-4 h-4" />
+                  </div>
+                  <div className="rounded-2xl px-4 py-3 bg-card text-card-foreground rounded-tl-sm shadow-md border border-border/50">
+                    <div className="flex items-center space-x-2">
+                      <div className="flex space-x-1">
+                        <span className="w-2 h-2 bg-blue-500 rounded-full opacity-75"></span>
+                        <span className="w-2 h-2 bg-blue-500 rounded-full opacity-75"></span>
+                        <span className="w-2 h-2 bg-blue-500 rounded-full opacity-75"></span>
+                      </div>
+                      <span className="text-xs text-muted-foreground ml-1">Thinking...</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
 
             {/* Invisible element for auto-scrolling */}
             <div ref={messagesEndRef} />
           </div>
         </div>
+
+        {/* Suggested prompts */}
+        {showSuggestions && messages.length <= 2 && (
+          <div className="mb-4">
+            <h3 className="text-sm text-muted-foreground mb-2 ml-1">Try asking about:</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+              {suggestedPrompts.map((prompt) => (
+                <button
+                  key={prompt.id}
+                  onClick={() => handleSuggestedPrompt(prompt.text)}
+                  className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-card/50 hover:bg-card text-left transition-colors duration-200 group"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-primary/70">{prompt.icon}</span>
+                    <span className="text-sm">{prompt.text}</span>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Input form */}
         <div className="w-full">
@@ -232,21 +329,30 @@ export default function ChatPage() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 disabled={isLoading}
-                className="w-full py-5 px-4 pr-10 rounded-full border-border/50 bg-background/30 backdrop-blur-sm shadow-elegant-sm focus-visible:ring-primary/30"
+                className="w-full py-6 px-4 pr-10 rounded-full border-border/50 bg-background/30 backdrop-blur-sm shadow-md focus-visible:ring-primary/30"
               />
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
+                <CornerDownLeft className="w-4 h-4" />
+              </div>
             </div>
             <Button
               type="submit"
               disabled={isLoading || !input.trim()}
-              className={`rounded-full w-10 h-10 flex-shrink-0 p-0 ${
+              className={`rounded-full w-12 h-12 flex-shrink-0 p-0 ${
                 input.trim()
                   ? "bg-primary hover:bg-primary/90 text-primary-foreground"
                   : "bg-muted text-muted-foreground"
               }`}
+              style={{
+                boxShadow: input.trim() ? "0 4px 14px -4px rgba(0,0,0,0.2)" : "none"
+              }}
             >
-              <SendHorizontal className="w-4 h-4" />
+              <SendHorizontal className="w-5 h-5" />
             </Button>
           </form>
+          <div className="mt-3 text-xs text-center text-muted-foreground">
+            PathPilot provides career guidance and advice based on general information.
+          </div>
         </div>
       </div>
     </div>
