@@ -41,10 +41,10 @@ export default function Home() {
     const particles: Particle[] = []
     const particleCount = Math.min(Math.floor(window.innerWidth / 80), 15) // Significantly reduced count
 
-    // Elegant, subtle colors
+    // Elegant, subtle colors - updated to purple theme
     const colors = [
-      "rgba(59, 130, 246, 0.12)", // blue
-      "rgba(79, 70, 229, 0.1)", // indigo
+      "rgba(147, 51, 234, 0.12)", // purple-600
+      "rgba(192, 38, 211, 0.1)", // fuchsia-600
     ]
 
     for (let i = 0; i < particleCount; i++) {
@@ -75,10 +75,10 @@ export default function Home() {
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-      // Add subtle gradient background
+      // Add subtle gradient background - updated to purple theme
       const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height)
-      gradient.addColorStop(0, "rgba(17, 24, 39, 1)") // gray-900
-      gradient.addColorStop(1, "rgba(31, 41, 55, 0.95)") // gray-800
+      gradient.addColorStop(0, "rgba(30, 20, 40, 1)") // dark purple
+      gradient.addColorStop(1, "rgba(44, 31, 60, 0.95)") // medium purple
       ctx.fillStyle = gradient
       ctx.fillRect(0, 0, canvas.width, canvas.height)
 
@@ -136,7 +136,8 @@ export default function Home() {
             const squareDist = dx * dx + dy * dy
             if (squareDist < 4900) { // 70^2
               ctx.beginPath()
-              ctx.strokeStyle = `rgba(156, 163, 175, ${0.01 * (1 - squareDist / 4900)})`
+              // Updated connection color to match purple theme
+              ctx.strokeStyle = `rgba(216, 180, 254, ${0.01 * (1 - squareDist / 4900)})`
               ctx.lineWidth = 0.1
               ctx.moveTo(p.x, p.y)
               ctx.lineTo(p2.x, p2.y)
@@ -170,7 +171,7 @@ export default function Home() {
               transition={{ duration: 0.6 }}
               className="flex items-center justify-center mb-8"
             >
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center shadow-elegant border border-primary/10">
+              <div className="w-16 h-16 bg-primary/15 rounded-full flex items-center justify-center shadow-elegant border border-primary/10">
                 <Compass className="w-8 h-8 text-primary" strokeWidth={1.5} />
               </div>
             </motion.div>
@@ -181,7 +182,7 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="text-4xl md:text-6xl font-medium mb-6 tracking-tight px-4"
             >
-              <span className="text-primary">PathPilot</span>
+              <span className="text-gradient">PathPilot</span>
               <span className="block mt-3 text-2xl md:text-4xl font-normal text-foreground/90">AI Career Counselor</span>
             </motion.h1>
             
@@ -201,7 +202,7 @@ export default function Home() {
               className="flex flex-col sm:flex-row gap-5 justify-center px-4"
             >
               <Link href="/chat" className="w-full sm:w-auto">
-                <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-elegant-sm rounded-full px-8 py-6 w-full sm:w-auto text-base">
+                <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_4px_14px_-4px_rgba(147,51,234,0.3)] rounded-full px-8 py-6 w-full sm:w-auto text-base">
                   Start Chatting
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
@@ -242,8 +243,8 @@ export default function Home() {
         <section className="py-16 px-4 sm:px-6">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-white mb-4">How PathPilot Can Help You</h2>
-              <p className="text-gray-400 max-w-2xl mx-auto">Our advanced AI provides tailored guidance to help you navigate your career journey with confidence.</p>
+              <h2 className="text-3xl font-bold mb-4">How <span className="text-primary">PathPilot</span> Can Help You</h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto">Our advanced AI provides tailored guidance to help you navigate your career journey with confidence.</p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

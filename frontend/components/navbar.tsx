@@ -54,11 +54,11 @@ export default function Navbar() {
             onClick={(e) => handleNavigation(e, "/")}
             className="flex items-center space-x-3 group"
           >
-            <div className="flex items-center justify-center w-9 h-9 bg-primary/10 rounded-full shadow-elegant-sm border border-primary/10">
+            <div className="flex items-center justify-center w-9 h-9 bg-primary/15 rounded-full shadow-elegant-sm border border-primary/10">
               <Compass className="w-4.5 h-4.5 text-primary" strokeWidth={2} />
             </div>
             <span className="text-lg font-medium tracking-wide text-foreground">
-              PathPilot
+              Path<span className="text-primary">Pilot</span>
             </span>
           </Link>
 
@@ -119,7 +119,7 @@ export default function Navbar() {
                     onClick={(e) => handleNavigation(e, link.href)}
                     className={`block text-base font-medium transition-colors py-2.5 px-3 rounded-lg w-full text-center ${
                       pathname === link.href
-                        ? "text-primary bg-primary/5"
+                        ? "text-primary bg-primary/10"
                         : "text-muted-foreground hover:text-foreground hover:bg-accent/10"
                     }`}
                   >

@@ -212,7 +212,7 @@ export default function ChatPage() {
         {/* Messages container */}
         <div 
           ref={chatContainerRef}
-          className="flex-grow overflow-y-auto rounded-xl p-4 md:p-6 bg-background/30 backdrop-blur-sm border border-border/30 shadow-lg mb-4"
+          className="flex-grow overflow-y-auto rounded-xl p-4 md:p-6 bg-secondary/30 backdrop-blur-sm border border-border/30 shadow-lg mb-4"
           style={{ 
             boxShadow: "0 4px 24px -8px rgba(0,0,0,0.1), 0 1px 6px -2px rgba(0,0,0,0.06)" 
           }}
@@ -234,7 +234,7 @@ export default function ChatPage() {
                     className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
                       message.sender === "user"
                         ? "bg-primary/15 text-primary"
-                        : "bg-blue-500/15 text-blue-500"
+                        : "bg-purple-500/15 text-purple-400"
                     }`}
                   >
                     {message.sender === "user" ? (
@@ -248,11 +248,11 @@ export default function ChatPage() {
                     className={`rounded-2xl px-4 py-3 shadow-md ${
                       message.sender === "user"
                         ? "bg-primary text-primary-foreground rounded-tr-sm"
-                        : "bg-card text-card-foreground rounded-tl-sm border border-border/50"
+                        : "bg-secondary text-secondary-foreground rounded-tl-sm border border-border/50"
                     }`}
                     style={{
                       boxShadow: message.sender === "user" 
-                        ? "0 2px 8px -2px rgba(0,0,0,0.1)" 
+                        ? "0 2px 8px -2px rgba(147, 51, 234, 0.2)" 
                         : "0 2px 8px -2px rgba(0,0,0,0.05)"
                     }}
                   >
@@ -274,15 +274,15 @@ export default function ChatPage() {
             {isLoading && (
               <div className="flex justify-start">
                 <div className="flex max-w-[85%] md:max-w-[75%] items-start gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-blue-500/15 text-blue-500">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-purple-500/15 text-purple-400">
                     <Bot className="w-4 h-4" />
                   </div>
-                  <div className="rounded-2xl px-4 py-3 bg-card text-card-foreground rounded-tl-sm shadow-md border border-border/50">
+                  <div className="rounded-2xl px-4 py-3 bg-secondary text-secondary-foreground rounded-tl-sm shadow-md border border-border/50">
                     <div className="flex items-center space-x-2">
                       <div className="flex space-x-1">
-                        <span className="w-2 h-2 bg-blue-500 rounded-full opacity-75"></span>
-                        <span className="w-2 h-2 bg-blue-500 rounded-full opacity-75"></span>
-                        <span className="w-2 h-2 bg-blue-500 rounded-full opacity-75"></span>
+                        <span className="w-2 h-2 bg-purple-500 rounded-full opacity-75"></span>
+                        <span className="w-2 h-2 bg-purple-500 rounded-full opacity-75"></span>
+                        <span className="w-2 h-2 bg-purple-500 rounded-full opacity-75"></span>
                       </div>
                       <span className="text-xs text-muted-foreground ml-1">Thinking...</span>
                     </div>
@@ -305,7 +305,7 @@ export default function ChatPage() {
                 <button
                   key={prompt.id}
                   onClick={() => handleSuggestedPrompt(prompt.text)}
-                  className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-card/50 hover:bg-card text-left transition-colors duration-200 group"
+                  className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-secondary/50 hover:bg-secondary text-left transition-colors duration-200 group"
                 >
                   <div className="flex items-center gap-2">
                     <span className="text-primary/70">{prompt.icon}</span>
@@ -329,7 +329,7 @@ export default function ChatPage() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 disabled={isLoading}
-                className="w-full py-6 px-4 pr-10 rounded-full border-border/50 bg-background/30 backdrop-blur-sm shadow-md focus-visible:ring-primary/30"
+                className="w-full py-6 px-4 pr-10 rounded-full border-border/50 bg-secondary/30 backdrop-blur-sm shadow-md focus-visible:ring-primary/30"
               />
               <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
                 <CornerDownLeft className="w-4 h-4" />
@@ -344,7 +344,7 @@ export default function ChatPage() {
                   : "bg-muted text-muted-foreground"
               }`}
               style={{
-                boxShadow: input.trim() ? "0 4px 14px -4px rgba(0,0,0,0.2)" : "none"
+                boxShadow: input.trim() ? "0 4px 14px -4px rgba(147, 51, 234, 0.3)" : "none"
               }}
             >
               <SendHorizontal className="w-5 h-5" />
