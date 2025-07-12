@@ -14,12 +14,16 @@ const nextConfig = {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
   },
   async rewrites() {
+    // Use the actual backend API
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+    const useMockApi = false; // Always use the real backend now that it's available
+    
     return [
       {
         source: '/api/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/:path*`,
+        destination: useMockApi ? '/api/mock/:path*' : `${apiUrl}/:path*`,
       },
-    ]
+    ];
   },
   // Performance optimizations
   swcMinify: true,
