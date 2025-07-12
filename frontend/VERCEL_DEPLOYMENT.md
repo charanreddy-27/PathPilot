@@ -62,3 +62,25 @@ The backend is already deployed at `https://pathpilot-production-0aa5.up.railway
 - All features requiring backend data should now work as the backend is deployed and connected
 - Never commit your API keys to your repository
 - If you encounter any issues with the backend connection, verify that the backend is running at `https://pathpilot-production-0aa5.up.railway.app`
+
+## Troubleshooting Deployment Issues
+
+### pnpm Version Compatibility
+
+If you encounter issues with pnpm version compatibility:
+
+1. The project is configured to use pnpm v9.0.0 via the `packageManager` field in package.json
+2. Vercel's build process is configured to use this version via the `installCommand` in vercel.json
+3. If you still encounter issues, you can manually set the pnpm version in Vercel's project settings
+
+### Node.js Version
+
+The project is configured to use Node.js v18 via the `.nvmrc` and `.node-version` files. This version is compatible with Next.js 15 and React 19.
+
+### Dependency Issues
+
+If you encounter dependency issues:
+
+1. The project uses the `--legacy-peer-deps` flag to handle peer dependency conflicts
+2. The `.npmrc` file is configured to use `legacy-peer-deps=true` and other settings to help with dependency resolution
+3. If you still encounter issues, you may need to downgrade React to v18 for better compatibility
