@@ -32,9 +32,9 @@ const nextConfig = {
       exclude: ['error', 'warn'],
     } : false,
   },
-  // Optimize page loading
+  // Optimize page loading - disabled optimizeCss to avoid critters dependency issues
   experimental: {
-    optimizeCss: true,
+    optimizeCss: false, // Disabled to avoid critters dependency issues
     optimizePackageImports: ['framer-motion', 'lucide-react'],
   },
 }
