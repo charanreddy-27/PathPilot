@@ -1,12 +1,9 @@
 {
   "version": 2,
-  "installCommand": "corepack enable && corepack use pnpm@9.0.0 && pnpm install",
-  "builds": [
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/next"
-    }
-  ],
+  "buildCommand": "cd frontend && pnpm run build",
+  "installCommand": "corepack enable && corepack prepare pnpm@9.0.0 --activate && cd frontend && pnpm install",
+  "outputDirectory": "frontend/.next",
+  "framework": "nextjs",
   "routes": [
     {
       "src": "/(.*)",
@@ -14,7 +11,7 @@
     }
   ],
   "env": {
+    "ENABLE_EXPERIMENTAL_COREPACK": "1",
     "NEXT_PUBLIC_API_URL": "https://pathpilot-production-0aa5.up.railway.app"
-  },
-  "outputDirectory": "frontend/.next"
+  }
 }

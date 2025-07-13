@@ -25,8 +25,6 @@ const nextConfig = {
       },
     ];
   },
-  // Performance optimizations
-  swcMinify: true,
   reactStrictMode: true,
   // Improved production builds
   compiler: {
