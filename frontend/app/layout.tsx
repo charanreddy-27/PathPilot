@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { ThemeProvider } from "@/lib/theme-provider"
+// Import directly from next-themes instead of our local file
+import { ThemeProvider as NextThemesProvider } from 'next-themes'
+import type { ThemeProviderProps } from 'next-themes'
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 
@@ -21,6 +23,26 @@ export const metadata: Metadata = {
   icons: {
     icon: '/placeholder-logo.png',
   },
+}
+
+// Define ThemeProvider directly in this file to avoid import issues
+function ThemeProvider({
+  children,
+  attribute = 'class',
+  defaultTheme = 'dark',
+  forcedTheme,
+  ...props
+}: ThemeProviderProps) {
+  return (
+    <NextThemesProvider
+      attribute={attribute}
+      defaultTheme={defaultTheme}
+      forcedTheme={forcedTheme}
+      {...props}
+    >
+      {children}
+    </NextThemesProvider>
+  )
 }
 
 export default function RootLayout({
