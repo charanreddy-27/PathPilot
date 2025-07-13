@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "buildCommand": "cd frontend && pnpm run build",
-  "installCommand": "corepack enable && corepack prepare pnpm@9.0.0 --activate && cd frontend && pnpm install",
-  "outputDirectory": "frontend/.next",
+  "buildCommand": "pnpm run build",
+  "installCommand": "corepack enable && corepack prepare pnpm@9.0.0 --activate && pnpm install",
+  "outputDirectory": ".next",
   "framework": "nextjs",
   "routes": [
     {
