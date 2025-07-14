@@ -4,14 +4,14 @@ WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
-    build-essential && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy requirements first to leverage Docker cache
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --upgrade 'gunicorn>=20.1.0'
+RUN gunicorn --version
 
 # Copy the rest of the application
 COPY . .

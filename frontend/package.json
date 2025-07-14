@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "clean": "rimraf .next"
+    "clean": "rimraf .next",
+    "verify-deployment": "node verify-deployment.js"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.3.22",
