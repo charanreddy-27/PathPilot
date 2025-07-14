@@ -24,6 +24,9 @@ class Config:
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'your-jwt-secret-key-here')
     JWT_ACCESS_TOKEN_EXPIRES = 3600  # 1 hour
     
+    # Rasa Configuration
+    RASA_URL = os.getenv('RASA_URL', 'http://localhost:5005')
+    
     # Rate Limiting
     RATELIMIT_DEFAULT = "100 per minute"
     RATELIMIT_STORAGE_URL = "memory://"
