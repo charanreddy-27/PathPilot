@@ -27,17 +27,6 @@ services:
       - CORS_ORIGINS=http://localhost:3000,http://frontend:3000
     depends_on:
       - mongo
-      - rasa
-
-  rasa:
-    build:
-      context: ./rasa_bot
-      dockerfile: Dockerfile
-    ports:
-      - "5005:5005"
-    volumes:
-      - ./rasa_bot:/app
-    command: run --enable-api --cors "*"
 
   mongo:
     image: mongo:latest
