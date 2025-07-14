@@ -12,6 +12,7 @@ const nextConfig = {
   transpilePackages: ['next-themes'],
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
   },
   async rewrites() {
     // Use the actual backend API

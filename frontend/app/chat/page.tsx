@@ -120,57 +120,19 @@ export default function ChatPage() {
         throw new Error("Failed to get response")
       }
 
-      const reader = response.body?.getReader()
-      let botResponse = ""
-
-      if (reader) {
-        while (true) {
-          const { done, value } = await reader.read()
-          
-          if (done) break
-          
-          // Convert the Uint8Array to a string
-          const chunk = new TextDecoder().decode(value)
-          botResponse += chunk
-          
-          // Update the message in real-time
-          setMessages((prev) => {
-            const lastMessage = prev.find(m => m.sender === "bot" && m.id === "streaming")
-            
-            if (lastMessage) {
-              return prev.map(m => 
-                m.id === "streaming" 
-                  ? { ...m, text: botResponse } 
-                  : m
-              )
-            } else {
-              return [
-                ...prev, 
-                {
-                  id: "streaming",
-                  text: botResponse,
-                  sender: "bot",
-                  timestamp: new Date()
-                }
-              ]
-            }
-          })
-        }
-
-        // Finalize the message with a proper ID once streaming is complete
-        setMessages((prev) => {
-          const withoutStreaming = prev.filter(m => m.id !== "streaming")
-          return [
-            ...withoutStreaming,
-            {
-              id: Date.now().toString(),
-              text: botResponse,
-              sender: "bot",
-              timestamp: new Date()
-            }
-          ]
-        })
-      }
+      // Parse the JSON response
+      const data = await response.json()
+      
+      // Add bot message to chat
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now().toString(),
+          text: data.message || "Sorry, I couldn't generate a response.",
+          sender: "bot",
+          timestamp: new Date(),
+        },
+      ])
     } catch (error) {
       console.error("Error:", error)
       toast("Failed to get a response. Please try again.", "error")
