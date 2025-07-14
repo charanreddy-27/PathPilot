@@ -103,16 +103,25 @@ export default function ChatPage() {
     setShowSuggestions(false)
 
     try {
-      // Send message to API
+      // Send message to API with conversation history for context
+      const conversationHistory = messages.map(msg => ({
+        role: msg.sender === "user" ? "user" : "assistant",
+        content: msg.text
+      }));
+      
+      // Add current message
+      conversationHistory.push({
+        role: "user",
+        content: input
+      });
+      
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ 
-          messages: [
-            { role: "user", content: input }
-          ] 
+          messages: conversationHistory
         }),
       })
 
