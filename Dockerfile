@@ -1,4 +1,4 @@
-FROM node:18-alpine AS frontend-base
+FROM node:22-alpine AS frontend-base
 
 # Install dependencies only when needed
 FROM frontend-base AS frontend-deps
@@ -47,7 +47,7 @@ RUN pip install --upgrade 'gunicorn>=20.1.0'
 COPY backend .
 
 # Final stage
-FROM node:18-alpine
+FROM node:22-alpine
 WORKDIR /app
 
 # Install pnpm globally
