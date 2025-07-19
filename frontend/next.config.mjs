@@ -10,6 +10,7 @@ const nextConfig = {
     unoptimized: true,
   },
   transpilePackages: ['next-themes'],
+  output: 'standalone', // Add standalone output mode for better Docker compatibility
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api',
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
