@@ -11,7 +11,7 @@ RUN npm install -g pnpm@9.0.0
 # Copy package.json and lock files for frontend
 COPY frontend/package.json frontend/pnpm-lock.yaml ./frontend/
 WORKDIR /app/frontend
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --no-frozen-lockfile
 
 # Build frontend
 FROM frontend-base AS frontend-builder
