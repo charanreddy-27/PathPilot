@@ -83,10 +83,10 @@ export default function ChatPage() {
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     // Don't send empty messages
-    if (!input.trim()) return
+    if (!input.trim()) return;
 
     // Create user message
     const userMessage: Message = {
@@ -94,15 +94,20 @@ export default function ChatPage() {
       text: input,
       sender: "user",
       timestamp: new Date(),
-    }
+    };
+
+    // Store the input before clearing it
+    const currentInput = input;
 
     // Add user message to chat
-    setMessages((prev) => [...prev, userMessage])
-    setInput("")
-    setIsLoading(true)
-    setShowSuggestions(false)
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
+    setIsLoading(true);
+    setShowSuggestions(false);
 
     try {
+      console.log("Sending message to API:", currentInput);
+      
       // Send message to API with conversation history for context
       const conversationHistory = messages.map(msg => ({
         role: msg.sender === "user" ? "user" : "assistant",
@@ -112,8 +117,10 @@ export default function ChatPage() {
       // Add current message
       conversationHistory.push({
         role: "user",
-        content: input
+        content: currentInput
       });
+      
+      console.log("Conversation history:", conversationHistory);
       
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -123,28 +130,37 @@ export default function ChatPage() {
         body: JSON.stringify({ 
           messages: conversationHistory
         }),
-      })
+        cache: 'no-store',
+      });
 
+      console.log("API response status:", response.status);
+      
       if (!response.ok) {
-        throw new Error("Failed to get response")
+        throw new Error(`Failed to get response: ${response.status}`);
       }
 
       // Parse the JSON response
-      const data = await response.json()
+      const data = await response.json();
+      console.log("API response data:", data);
+      
+      if (!data || typeof data.message === 'undefined') {
+        console.error("Invalid response format:", data);
+        throw new Error("Invalid response format");
+      }
       
       // Add bot message to chat
       setMessages((prev) => [
         ...prev,
         {
           id: Date.now().toString(),
-          text: data.message || "Sorry, I couldn't generate a response.",
+          text: data.message || "I don't have a response for that at the moment.",
           sender: "bot",
           timestamp: new Date(),
         },
-      ])
+      ]);
     } catch (error) {
-      console.error("Error:", error)
-      toast("Failed to get a response. Please try again.", "error")
+      console.error("Error in chat submission:", error);
+      toast("Failed to get a response. Please try again.", "error");
 
       // Add error message from bot
       setMessages((prev) => [
@@ -155,11 +171,11 @@ export default function ChatPage() {
           sender: "bot",
           timestamp: new Date(),
         },
-      ])
+      ]);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   // Handle clicking a suggested prompt
   const handleSuggestedPrompt = (prompt: string) => {

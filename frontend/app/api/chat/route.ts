@@ -117,7 +117,102 @@ export async function POST(req: Request) {
       );
     }
     
-    // Check if OPENAI_API_KEY is set
+    // Create conversation history array for API calls
+    const conversationHistory = previousMessages.concat([{
+      role: "user",
+      content: userMessage
+    }]);
+    
+    // First try to use the backend API
+    const backendApiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://pathpilot-production-0aa5.up.railway.app';
+    if (backendApiUrl) {
+      try {
+        console.log("Trying to use backend API at:", backendApiUrl);
+        
+        // Construct the correct endpoint URL - try both with and without /api prefix
+        let apiEndpoint = `${backendApiUrl}/chat/message`;
+        
+        // If the URL already contains /api, don't add it again
+        if (!backendApiUrl.includes('/api')) {
+          apiEndpoint = `${backendApiUrl}/api/chat/message`;
+        }
+        
+        console.log("API endpoint:", apiEndpoint);
+        
+        const backendResponse = await fetch(apiEndpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ 
+            message: userMessage,
+            messages: conversationHistory,
+            user_id: "frontend-user" // You can use a more specific ID if needed
+          }),
+          cache: 'no-store',
+        });
+        
+        if (backendResponse.ok) {
+          const data = await backendResponse.json();
+          console.log("Backend API response:", data);
+          
+          // Handle different response formats
+          const responseMessage = data.message || data.response || data.reply || data.answer || "No response from backend";
+          
+          return new Response(
+            JSON.stringify({ message: responseMessage }),
+            { status: 200, headers: { "Content-Type": "application/json" } }
+          );
+        } else {
+          console.log("Backend API failed with status:", backendResponse.status);
+          const errorText = await backendResponse.text();
+          console.log("Response text:", errorText);
+          
+          // Try alternative endpoint if the first one failed
+          try {
+            const altEndpoint = apiEndpoint.includes('/api') 
+              ? apiEndpoint.replace('/api', '') 
+              : `${backendApiUrl}/api/chat/message`;
+              
+            console.log("Trying alternative endpoint:", altEndpoint);
+            
+            const altResponse = await fetch(altEndpoint, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ 
+                message: userMessage,
+                user_id: "frontend-user"
+              }),
+              cache: 'no-store',
+            });
+            
+            if (altResponse.ok) {
+              const altData = await altResponse.json();
+              console.log("Alternative endpoint response:", altData);
+              
+              // Handle different response formats
+              const responseMessage = altData.message || altData.response || altData.reply || "No response from backend";
+              
+              return new Response(
+                JSON.stringify({ message: responseMessage }),
+                { status: 200, headers: { "Content-Type": "application/json" } }
+              );
+            } else {
+              console.log("Alternative endpoint failed with status:", altResponse.status);
+            }
+          } catch (altError) {
+            console.error("Alternative endpoint error:", altError);
+          }
+        }
+      } catch (backendError) {
+        console.error("Backend API error:", backendError);
+        // Continue to fallback options
+      }
+    }
+    
+    // Check if OPENAI_API_KEY is set as fallback
     const apiKey = process.env.OPENAI_API_KEY;
     if (!apiKey) {
       console.log("OPENAI_API_KEY is not set, using mock response")
