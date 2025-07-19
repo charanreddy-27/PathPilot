@@ -1,9 +1,12 @@
 {
   "version": 2,
-  "buildCommand": "cd frontend && pnpm run build",
-  "installCommand": "cd frontend && corepack enable && corepack prepare pnpm@9.0.0 --activate && pnpm install",
+  "buildCommand": "cd frontend && node build-production.js",
+  "installCommand": "cd frontend && corepack enable && corepack prepare pnpm@9.0.0 --activate && pnpm install --no-frozen-lockfile",
   "outputDirectory": "frontend/.next",
-  "framework": "nextjs",
+  "framework": {
+    "name": "nextjs",
+    "version": "15.x"
+  },
   "routes": [
     {
       "src": "/(.*)",
@@ -12,6 +15,8 @@
   ],
   "env": {
     "ENABLE_EXPERIMENTAL_COREPACK": "1",
-    "NEXT_PUBLIC_API_URL": "https://pathpilot-production-0aa5.up.railway.app"
+    "NEXT_PUBLIC_API_URL": "https://pathpilot-production-0aa5.up.railway.app",
+    "NODE_OPTIONS": "--max_old_space_size=4096",
+    "NEXT_TELEMETRY_DISABLED": "1"
   }
 }

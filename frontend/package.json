@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:production": "node build-production.js",
     "start": "next start",
     "lint": "next lint",
     "clean": "rimraf .next",

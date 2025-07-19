@@ -26,7 +26,7 @@ const nextConfig = {
       },
     ];
   },
-  reactStrictMode: true,
+  reactStrictMode: false, // Changed to false for production to avoid double-rendering issues
   // Improved production builds
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production' ? {
@@ -37,7 +37,12 @@ const nextConfig = {
   experimental: {
     optimizeCss: false, // Disabled to avoid critters dependency issues
     optimizePackageImports: ['framer-motion', 'lucide-react'],
+    esmExternals: 'loose', // Added for better compatibility
   },
+  // Increase build timeout for larger projects
+  staticPageGenerationTimeout: 120,
+  // Disable source maps in production for better performance
+  productionBrowserSourceMaps: false,
 }
 
 export default nextConfig
