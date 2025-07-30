@@ -1,510 +1,270 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import Link from "next/link"
-import Image from "next/image"
 import { motion } from "framer-motion"
-import { ArrowRight, Compass, GraduationCap, LineChart, CheckCircle, Star, TrendingUp, Award, Sparkles, Bot } from "lucide-react"
+import { ArrowRight, Bot, MessageCircle, Target, TrendingUp, Users, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useEffect, useRef } from "react"
 
-// Particle interface for the background
-interface Particle {
-  x: number
-  y: number
-  size: number
-  speedX: number
-  speedY: number
-  opacity: number
-  color: string
-}
+export default function HomePage() {
+  const [mounted, setMounted] = useState(false)
 
-export default function Home() {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-
-  // Subtle elegant particle background effect - optimized for performance
   useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-
-    const ctx = canvas.getContext("2d")
-    if (!ctx) return
-
-    // Set canvas to full screen
-    const handleResize = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
-    }
-
-    window.addEventListener("resize", handleResize)
-    handleResize()
-
-    // Create particles - further reduced count for better performance
-    const particles: Particle[] = []
-    const particleCount = Math.min(Math.floor(window.innerWidth / 70), 20) // Slightly more particles
-
-    // Elegant, subtle colors - updated to purple theme
-    const colors = [
-      "rgba(147, 51, 234, 0.15)", // purple-600
-      "rgba(192, 38, 211, 0.12)", // fuchsia-600
-      "rgba(168, 85, 247, 0.14)", // purple-500
-    ]
-
-    for (let i = 0; i < particleCount; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        size: Math.random() * 1.5 + 0.5, // Slightly larger particles
-        speedX: (Math.random() - 0.5) * 0.12,
-        speedY: (Math.random() - 0.5) * 0.12,
-        opacity: Math.random() * 0.25 + 0.1, // Higher opacity for visibility
-        color: colors[Math.floor(Math.random() * colors.length)],
-      })
-    }
-
-    // Create a mouse effect
-    let mouseX = 0
-    let mouseY = 0
-    let mouseRadius = 80 // Larger interaction radius
-
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX = e.clientX
-      mouseY = e.clientY
-    }
-
-    window.addEventListener("mousemove", handleMouseMove)
-
-    // Animation loop - optimized
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-      // Add subtle gradient background - updated to purple theme with more depth
-      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height)
-      gradient.addColorStop(0, "rgba(30, 20, 40, 1)") // dark purple
-      gradient.addColorStop(0.4, "rgba(44, 31, 60, 0.98)") // medium purple
-      gradient.addColorStop(0.8, "rgba(35, 25, 50, 0.95)") // medium-dark purple
-      gradient.addColorStop(1, "rgba(30, 20, 40, 1)") // dark purple
-      ctx.fillStyle = gradient
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-      // Update and draw particles - with optimized calculations
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i]
-
-        // Calculate distance to mouse - only when needed
-        if (Math.abs(mouseX - p.x) < mouseRadius && Math.abs(mouseY - p.y) < mouseRadius) {
-          const dx = mouseX - p.x
-          const dy = mouseY - p.y
-          const distance = Math.sqrt(dx * dx + dy * dy)
-
-          // Mouse interaction - gentle push away from mouse
-          if (distance < mouseRadius) {
-            const force = (mouseRadius - distance) / mouseRadius
-            p.speedX -= dx * force * 0.004
-            p.speedY -= dy * force * 0.004
-          }
-        }
-
-        // Add some natural movement with slight drift - reduced randomness
-        if (i % 2 === 0) { // Only apply to half the particles
-          p.speedX += (Math.random() - 0.5) * 0.002
-          p.speedY += (Math.random() - 0.5) * 0.002
-        }
-
-        // Move particles
-        p.x += p.speedX
-        p.y += p.speedY
-
-        // Wrap around edges
-        if (p.x > canvas.width) p.x = 0
-        if (p.x < 0) p.x = canvas.width
-        if (p.y > canvas.height) p.y = 0
-        if (p.y < 0) p.y = canvas.height
-
-        // Draw particle
-        ctx.beginPath()
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
-        
-        // Use the color with custom opacity
-        const color = p.color.replace(/[\d\.]+\)$/g, `${p.opacity})`)
-        ctx.fillStyle = color
-        ctx.fill()
-
-        // Connect particles - much more selective connections
-        if (i % 5 === 0) { // Process more particles for connections
-          for (let j = i + 1; j < Math.min(i + 5, particles.length); j += 1) { // More connections
-            const p2 = particles[j]
-            const dx = p.x - p2.x
-            const dy = p.y - p2.y
-            
-            // Use square distance for performance (avoid sqrt)
-            const squareDist = dx * dx + dy * dy
-            if (squareDist < 6400) { // 80^2 - larger connection distance
-              ctx.beginPath()
-              // Updated connection color to match purple theme
-              ctx.strokeStyle = `rgba(216, 180, 254, ${0.015 * (1 - squareDist / 6400)})`
-              ctx.lineWidth = 0.15
-              ctx.moveTo(p.x, p.y)
-              ctx.lineTo(p2.x, p2.y)
-              ctx.stroke()
-            }
-          }
-        }
-      }
-
-      requestAnimationFrame(animate)
-    }
-
-    animate()
-
-    return () => {
-      window.removeEventListener("resize", handleResize)
-      window.removeEventListener("mousemove", handleMouseMove)
-    }
+    setMounted(true)
   }, [])
 
-  // Animation variants
-  const fadeIn = {
-    hidden: { opacity: 0, y: 20 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      transition: {
-        delay: i * 0.1,
-        duration: 0.5,
-        ease: "easeOut"
-      }
-    })
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-purple-600"></div>
+        </div>
+      </div>
+    )
   }
 
+  const features = [
+    {
+      icon: <Bot className="w-6 h-6" />,
+      title: "AI-Powered Guidance",
+      description: "Get personalized career advice from our advanced AI counselor"
+    },
+    {
+      icon: <Target className="w-6 h-6" />,
+      title: "Goal Setting",
+      description: "Set and track your career goals with intelligent recommendations"
+    },
+    {
+      icon: <TrendingUp className="w-6 h-6" />,
+      title: "Career Growth",
+      description: "Discover opportunities and strategies for advancement"
+    },
+    {
+      icon: <Users className="w-6 h-6" />,
+      title: "Industry Insights",
+      description: "Stay updated with latest trends and market demands"
+    }
+  ]
+
+  const testimonials = [
+    {
+      name: "Sarah Johnson",
+      role: "Software Engineer",
+      content: "PathPilot helped me transition from marketing to tech. The AI guidance was incredibly valuable!",
+      rating: 5
+    },
+    {
+      name: "Michael Chen",
+      role: "Data Scientist",
+      content: "The personalized career roadmap changed my perspective and accelerated my growth.",
+      rating: 5
+    },
+    {
+      name: "Emma Davis",
+      role: "Product Manager",
+      content: "Outstanding platform! The AI counselor provided insights I never considered.",
+      rating: 5
+    }
+  ]
+
   return (
-    <>
-      <canvas ref={canvasRef} className="fixed top-0 left-0 w-full h-full -z-10" />
-      
-      {/* Decorative grid pattern */}
-      <div className="fixed inset-0 bg-[linear-gradient(to_right,rgba(147,51,234,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(147,51,234,0.03)_1px,transparent_1px)] bg-[size:40px_40px] -z-5 opacity-30"></div>
-      
-      <div className="relative z-10 w-full">
-        {/* Hero Section - enhanced */}
-        <section className="min-h-[90vh] flex flex-col items-center justify-center px-6 sm:px-8 w-full">
-          <div className="w-full max-w-5xl mx-auto text-center">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, type: "spring", stiffness: 100 }}
-              className="flex items-center justify-center mb-8"
-            >
-              <div className="relative">
-                <div className="absolute -inset-2 bg-gradient-to-r from-primary/40 to-purple-500/40 rounded-full blur-xl opacity-30 animate-pulse"></div>
-                <div className="relative w-20 h-20 bg-primary/15 rounded-full flex items-center justify-center shadow-[0_0_40px_rgba(147,51,234,0.2)] border border-primary/20">
-                  <Compass className="w-10 h-10 text-primary" strokeWidth={1.5} />
-                </div>
-              </div>
-            </motion.div>
-            
-            <motion.h1 
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      {/* Floating Background Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-purple-300 dark:bg-purple-700 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+        <div className="absolute top-1/3 right-1/4 w-72 h-72 bg-blue-300 dark:bg-blue-700 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-72 h-72 bg-pink-300 dark:bg-pink-700 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+      </div>
+
+      {/* Hero Section */}
+      <section className="relative px-4 pt-20 pb-16">
+        <div className="container mx-auto max-w-6xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-center"
+          >
+            <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-5xl md:text-7xl font-bold mb-6 tracking-tight px-4 leading-tight"
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 dark:text-white mb-6"
             >
-              <div className="relative inline-block">
-                <span className="text-gradient relative z-10">PathPilot</span>
-                <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-purple-500/20 blur-xl opacity-50 rounded-full"></div>
-              </div>
-              <span className="block mt-4 text-3xl md:text-5xl font-medium text-foreground/90">Your AI Career Navigator</span>
+              Your AI Career
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600 block">
+                Navigator
+              </span>
             </motion.h1>
-            
-            <motion.p 
+
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed px-4"
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="text-xl md:text-2xl text-slate-600 dark:text-slate-300 mb-8 max-w-3xl mx-auto leading-relaxed"
             >
-              Navigate your professional journey with personalized guidance from our advanced AI career counselor. Get tailored advice, skill recommendations, and career insights.
+              Discover your perfect career path with AI-powered guidance. Get personalized advice, 
+              skill recommendations, and strategic insights to advance your professional journey.
             </motion.p>
-            
-            <motion.div 
+
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="flex flex-col sm:flex-row gap-5 justify-center px-4 mb-12"
+              transition={{ duration: 0.8, delay: 0.6 }}
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12"
             >
-              <Link href="/chat" className="w-full sm:w-auto group">
-                <Button size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-[0_4px_20px_-4px_rgba(147,51,234,0.5)] hover:shadow-[0_8px_30px_-4px_rgba(147,51,234,0.6)] rounded-full px-8 py-6 w-full sm:w-auto text-base font-medium relative overflow-hidden">
-                  <span className="relative z-10">Start Your Journey</span>
-                  <ArrowRight className="ml-2 h-5 w-5 relative z-10 group-hover:translate-x-1 transition-transform" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <Link href="/chat">
+                <Button size="lg" className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl">
+                  Start Your Journey
+                  <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
-              <Button size="lg" variant="outline" className="border-primary/30 text-foreground hover:text-primary hover:border-primary/50 hover:bg-primary/5 rounded-full px-8 py-6 w-full sm:w-auto text-base font-medium backdrop-blur-sm group relative overflow-hidden">
-                <span className="relative z-10">Learn More</span>
-                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              </Button>
+              
+              <Link href="/chat">
+                <Button variant="outline" size="lg" className="border-2 border-purple-600 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-950 px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-200">
+                  <MessageCircle className="mr-2 w-5 h-5" />
+                  Try AI Chat
+                </Button>
+              </Link>
             </motion.div>
 
-            {/* Feature highlights */}
+            {/* Stats */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.5 }}
-              className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto"
+              transition={{ duration: 0.8, delay: 0.8 }}
+              className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto"
             >
-              {[
-                { icon: <Sparkles className="w-5 h-5" />, text: "AI-Powered Advice" },
-                { icon: <CheckCircle className="w-5 h-5" />, text: "Personalized Path" },
-                { icon: <TrendingUp className="w-5 h-5" />, text: "Skill Analysis" },
-                { icon: <Award className="w-5 h-5" />, text: "Career Insights" },
-              ].map((item, i) => (
-                <motion.div 
-                  key={i} 
-                  className="flex flex-col items-center p-3 rounded-xl bg-primary/5 border border-primary/10 backdrop-blur-sm hover:bg-primary/10 hover:border-primary/20 transition-colors group"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 + (i * 0.1), duration: 0.4 }}
-                >
-                  <div className="text-primary mb-2 group-hover:scale-110 transition-transform">{item.icon}</div>
-                  <p className="text-sm font-medium">{item.text}</p>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
-          
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="absolute bottom-10 left-1/2 transform -translate-x-1/2"
-          >
-            <div className="flex flex-col items-center">
-              <span className="text-muted-foreground text-sm mb-2">Scroll to explore</span>
-              <div className="w-6 h-10 border border-primary/30 rounded-full flex justify-center">
-                <motion.div
-                  animate={{ 
-                    y: [0, 8, 0],
-                  }}
-                  transition={{
-                    duration: 1.8,
-                    repeat: Infinity,
-                    repeatType: "loop",
-                    ease: "easeInOut"
-                  }}
-                  className="w-1.5 h-1.5 rounded-full bg-primary mt-2"
-                />
+              <div className="text-center">
+                <div className="text-3xl font-bold text-purple-600">10K+</div>
+                <div className="text-slate-600 dark:text-slate-400">Career Paths Explored</div>
               </div>
-            </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-blue-600">95%</div>
+                <div className="text-slate-600 dark:text-slate-400">Success Rate</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-green-600">24/7</div>
+                <div className="text-slate-600 dark:text-slate-400">AI Support</div>
+              </div>
+            </motion.div>
           </motion.div>
-        </section>
+        </div>
+      </section>
 
-        {/* Features Section - enhanced */}
-        <section className="py-20 px-4 sm:px-6 relative overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent"></div>
-          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent"></div>
-          
-          <div className="max-w-6xl mx-auto relative z-10">
-            <div className="text-center mb-16">
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: "-100px" }}
-                variants={fadeIn}
-                custom={0}
-                className="inline-block mb-3 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium"
-              >
-                Explore Features
-              </motion.div>
-              <motion.h2 
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: "-100px" }}
-                variants={fadeIn}
-                custom={1}
-                className="text-4xl font-bold mb-4"
-              >
-                How <span className="text-primary">PathPilot</span> Guides Your Career
-              </motion.h2>
-              <motion.p 
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: "-100px" }}
-                variants={fadeIn}
-                custom={2}
-                className="text-muted-foreground max-w-2xl mx-auto text-lg"
-              >
-                Our advanced AI provides tailored guidance to help you navigate your career journey with confidence and clarity.
-              </motion.p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {[
-                {
-                  icon: <GraduationCap className="w-6 h-6" />,
-                  title: "Skill Development",
-                  description: "Identify key skills needed for your dream role and get personalized learning paths to acquire them efficiently."
-                },
-                {
-                  icon: <LineChart className="w-6 h-6" />,
-                  title: "Career Trajectory",
-                  description: "Visualize potential career paths based on your experience, skills, and goals with AI-powered projections."
-                },
-                {
-                  icon: <Star className="w-6 h-6" />,
-                  title: "Interview Preparation",
-                  description: "Practice with AI-simulated interviews tailored to specific roles and receive feedback to improve your performance."
-                }
-              ].map((feature, index) => (
-                <motion.div
-                  key={index}
-                  initial="hidden"
-                  whileInView="visible"
-                  viewport={{ once: true, margin: "-100px" }}
-                  variants={fadeIn}
-                  custom={index + 3}
-                  className="bg-secondary/30 backdrop-blur-sm border border-border/50 rounded-xl p-6 shadow-[0_4px_24px_-8px_rgba(0,0,0,0.1)] group hover:shadow-[0_8px_30px_-8px_rgba(147,51,234,0.2)] transition-all duration-300 hover:-translate-y-1 relative overflow-hidden"
-                >
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-primary/5 to-transparent rounded-bl-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-500"></div>
-                  
-                  <div className="relative">
-                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-5 text-primary group-hover:bg-primary/15 transition-colors">
-                      {feature.icon}
-                    </div>
-                    <h3 className="text-xl font-semibold mb-3 group-hover:text-primary transition-colors">{feature.title}</h3>
-                    <p className="text-muted-foreground">{feature.description}</p>
-                    
-                    <div className="mt-6 flex items-center text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <span className="text-sm font-medium mr-1">Learn more</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
+      {/* Features Section */}
+      <section className="py-20 bg-white dark:bg-slate-800/50">
+        <div className="container mx-auto max-w-6xl px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4">
+              Why Choose PathPilot?
+            </h2>
+            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+              Our AI-powered platform provides comprehensive career guidance tailored to your unique goals and aspirations.
+            </p>
+          </motion.div>
 
-        {/* Testimonial/Demo Section */}
-        <section className="py-20 px-4 sm:px-6 relative">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, index) => (
               <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: "-100px" }}
-                variants={fadeIn}
-                custom={0}
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="bg-white dark:bg-slate-700 p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-slate-200 dark:border-slate-600"
               >
-                <div className="inline-block mb-3 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium">
-                  Real Conversations
+                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl flex items-center justify-center text-white mb-4">
+                  {feature.icon}
                 </div>
-                <h2 className="text-3xl font-bold mb-5">Experience AI-Powered Career Guidance</h2>
-                <p className="text-muted-foreground mb-6 text-lg">
-                  PathPilot provides personalized advice based on your unique skills, experience, and career goals. Start a conversation today and discover your optimal path.
+                <h3 className="text-xl font-semibold text-slate-900 dark:text-white mb-2">
+                  {feature.title}
+                </h3>
+                <p className="text-slate-600 dark:text-slate-300">
+                  {feature.description}
                 </p>
-                <div className="space-y-4 mb-8">
-                  {[
-                    "Get tailored career recommendations",
-                    "Identify skill gaps and learning opportunities",
-                    "Prepare for interviews with expert guidance",
-                    "Explore salary insights and negotiation strategies"
-                  ].map((item, i) => (
-                    <div key={i} className="flex items-center gap-3">
-                      <div className="text-primary"><CheckCircle className="w-5 h-5" /></div>
-                      <p>{item}</p>
-                    </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-20">
+        <div className="container mx-auto max-w-6xl px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-4">
+              Success Stories
+            </h2>
+            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+              See how PathPilot has helped professionals like you achieve their career goals.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="bg-white dark:bg-slate-700 p-6 rounded-2xl shadow-lg border border-slate-200 dark:border-slate-600"
+              >
+                <div className="flex items-center mb-4">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
                   ))}
                 </div>
-                <Link href="/chat" className="group">
-                  <Button className="rounded-full px-6 py-5 relative overflow-hidden">
-                    <span className="relative z-10">Start a Conversation</span>
-                    <ArrowRight className="ml-2 h-4 w-4 relative z-10 group-hover:translate-x-1 transition-transform" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  </Button>
-                </Link>
-              </motion.div>
-
-              <motion.div
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: "-100px" }}
-                variants={fadeIn}
-                custom={1}
-                className="relative"
-              >
-                <div className="absolute -inset-1.5 bg-gradient-to-r from-primary/30 to-purple-500/30 rounded-2xl blur-lg opacity-30"></div>
-                <div className="relative bg-secondary/50 backdrop-blur-md border border-border/50 rounded-xl p-5 shadow-lg">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center">
-                      <Bot className="w-5 h-5 text-primary" />
-                    </div>
-                    <div>
-                      <p className="font-medium">PathPilot AI</p>
-                      <p className="text-xs text-muted-foreground">Career Advisor</p>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-4 mb-4">
-                    <div className="bg-primary/5 rounded-lg p-3 rounded-tl-sm">
-                      <p className="text-sm">Hello! I'm PathPilot, your AI career counselor. How can I help with your career journey today?</p>
-                    </div>
-                    
-                    <div className="bg-primary/5 rounded-lg p-3 rounded-tl-sm">
-                      <p className="text-sm">I can help you identify skills to develop, prepare for interviews, or explore new career paths based on your experience.</p>
-                    </div>
-                    
-                    <div className="bg-primary text-primary-foreground rounded-lg p-3 rounded-tr-sm ml-auto">
-                      <p className="text-sm">I want to transition from marketing to UX design. What skills should I focus on?</p>
-                    </div>
-                    
-                    <div className="bg-primary/5 rounded-lg p-3 rounded-tl-sm">
-                      <p className="text-sm">Great choice! For a marketing to UX transition, focus on: UI/UX tools like Figma, user research methods, information architecture, and building a portfolio showcasing your process. Your marketing background gives you valuable user psychology insights!</p>
-                    </div>
-                  </div>
-                  
-                  <div className="pt-3 border-t border-border/30 flex">
-                    <input 
-                      type="text" 
-                      placeholder="Ask about your career..." 
-                      className="bg-transparent border-none flex-grow focus:outline-none text-sm"
-                      disabled
-                    />
-                    <Button size="sm" variant="ghost" className="text-primary">
-                      <ArrowRight className="w-4 h-4" />
-                    </Button>
-                  </div>
+                <p className="text-slate-600 dark:text-slate-300 mb-4 italic">
+                  "{testimonial.content}"
+                </p>
+                <div>
+                  <div className="font-semibold text-slate-900 dark:text-white">{testimonial.name}</div>
+                  <div className="text-sm text-slate-500 dark:text-slate-400">{testimonial.role}</div>
                 </div>
               </motion.div>
-            </div>
+            ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* CTA Section */}
-        <section className="py-20 px-4 sm:px-6 relative">
-          <div className="absolute top-1/2 left-1/4 w-64 h-64 bg-primary/5 rounded-full blur-3xl opacity-30 -z-10"></div>
-          <div className="absolute bottom-1/3 right-1/4 w-72 h-72 bg-purple-500/5 rounded-full blur-3xl opacity-30 -z-10"></div>
-          
-          <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-100px" }}
-            variants={fadeIn}
-            custom={0}
-            className="max-w-4xl mx-auto text-center bg-gradient-to-b from-primary/5 to-primary/10 rounded-2xl p-12 border border-primary/20 backdrop-blur-sm relative overflow-hidden"
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-r from-purple-600 to-blue-600">
+        <div className="container mx-auto max-w-4xl px-4 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
           >
-            <div className="absolute -top-24 -right-24 w-48 h-48 bg-gradient-to-bl from-primary/10 to-transparent rounded-full"></div>
-            <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-gradient-to-tr from-purple-500/10 to-transparent rounded-full"></div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Ready to Navigate Your Career Path?</h2>
-            <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
-              Get personalized guidance, skill recommendations, and career insights tailored just for you.
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+              Ready to Transform Your Career?
+            </h2>
+            <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
+              Join thousands of professionals who have found their path with PathPilot. Start your journey today.
             </p>
-            <Link href="/chat" className="group">
-              <Button size="lg" className="rounded-full px-8 py-6 text-lg shadow-[0_4px_20px_-4px_rgba(147,51,234,0.5)] hover:shadow-[0_8px_30px_-4px_rgba(147,51,234,0.6)] relative overflow-hidden">
-                <span className="relative z-10">Start Your Journey Now</span>
-                <ArrowRight className="ml-2 h-5 w-5 relative z-10 group-hover:translate-x-1 transition-transform" />
-                <div className="absolute inset-0 bg-gradient-to-r from-primary to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            <Link href="/chat">
+              <Button size="lg" className="bg-white text-purple-600 hover:bg-slate-100 px-8 py-4 rounded-xl text-lg font-semibold transition-all duration-200 shadow-lg hover:shadow-xl">
+                Get Started Now
+                <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>
           </motion.div>
-        </section>
-      </div>
-    </>
+        </div>
+      </section>
+    </div>
   )
 }

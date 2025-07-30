@@ -1,12 +1,11 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
-import { SendHorizontal, Bot, User, Loader2, Sparkles, ChevronRight, CornerDownLeft } from "lucide-react"
+import { useState, useRef, useEffect, useCallback } from "react"
+import { SendHorizontal, Bot, User, Loader2, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 
-// Define message type
 type Message = {
   id: string
   text: string
@@ -14,15 +13,7 @@ type Message = {
   timestamp: Date
 }
 
-// Define suggested prompt type
-type SuggestedPrompt = {
-  id: string
-  text: string
-  icon?: React.ReactNode
-}
-
 export default function ChatPage() {
-  // State for messages and input
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
@@ -36,309 +27,201 @@ export default function ChatPage() {
   const [showSuggestions, setShowSuggestions] = useState(true)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-  const chatContainerRef = useRef<HTMLDivElement>(null)
   const { toast } = useToast()
 
-  // Suggested prompts
-  const suggestedPrompts: SuggestedPrompt[] = [
-    { 
-      id: "career-change", 
-      text: "How do I transition to a career in tech?",
-      icon: <Sparkles className="w-3.5 h-3.5" />
-    },
-    { 
-      id: "resume-tips", 
-      text: "Help me improve my resume",
-      icon: <Sparkles className="w-3.5 h-3.5" />
-    },
-    { 
-      id: "interview-prep", 
-      text: "How should I prepare for a job interview?",
-      icon: <Sparkles className="w-3.5 h-3.5" />
-    },
-    { 
-      id: "skill-assessment", 
-      text: "What skills should I develop for my career?",
-      icon: <Sparkles className="w-3.5 h-3.5" />
-    },
+  const suggestedPrompts = [
+    "How do I transition to a career in tech?",
+    "Help me improve my resume",
+    "How should I prepare for a job interview?",
+    "What skills should I develop for my career?",
   ]
 
-  // Auto-scroll to bottom when messages change
-  useEffect(() => {
-    scrollToBottom()
-  }, [messages])
-
-  // Focus input on load and prevent auto-scrolling to bottom
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus()
-    }
-    // Prevent auto-scroll to bottom on page load
-    window.scrollTo(0, 0)
+  const scrollToBottom = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [])
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages, scrollToBottom])
 
-  // Handle form submission
+  useEffect(() => {
+    inputRef.current?.focus()
+  }, [])
+
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    // Don't send empty messages
-    if (!input.trim()) return;
+    if (!input.trim()) return
 
-    // Create user message
     const userMessage: Message = {
       id: Date.now().toString(),
       text: input,
       sender: "user",
       timestamp: new Date(),
-    };
+    }
 
-    // Store the input before clearing it
-    const currentInput = input;
-
-    // Add user message to chat
-    setMessages((prev) => [...prev, userMessage]);
-    setInput("");
-    setIsLoading(true);
-    setShowSuggestions(false);
+    const currentInput = input
+    setInput("")
+    setShowSuggestions(false)
+    setMessages(prev => [...prev, userMessage])
+    setIsLoading(true)
 
     try {
-      console.log("Sending message to API:", currentInput);
-      
-      // Send message to API with conversation history for context
-      const conversationHistory = messages.map(msg => ({
-        role: msg.sender === "user" ? "user" : "assistant",
-        content: msg.text
-      }));
-      
-      // Add current message
-      conversationHistory.push({
-        role: "user",
-        content: currentInput
-      });
-      
-      console.log("Conversation history:", conversationHistory);
-      
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
-          messages: conversationHistory
+        body: JSON.stringify({
+          message: currentInput,
+          conversation_history: messages
+            .filter(msg => msg.id !== "welcome")
+            .map(msg => ({
+              role: msg.sender === "user" ? "user" : "assistant",
+              content: msg.text,
+            })),
         }),
-        cache: 'no-store',
-      });
+      })
 
-      console.log("API response status:", response.status);
-      
       if (!response.ok) {
-        throw new Error(`Failed to get response: ${response.status}`);
+        throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      // Parse the JSON response
-      const data = await response.json();
-      console.log("API response data:", data);
-      
-      if (!data || typeof data.message === 'undefined') {
-        console.error("Invalid response format:", data);
-        throw new Error("Invalid response format");
+      const data = await response.json()
+      const botResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        text: data.response || "I apologize, but I'm having trouble responding right now. Please try again.",
+        sender: "bot",
+        timestamp: new Date(),
       }
-      
-      // Add bot message to chat
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: Date.now().toString(),
-          text: data.message || "I don't have a response for that at the moment.",
-          sender: "bot",
-          timestamp: new Date(),
-        },
-      ]);
+
+      setMessages(prev => [...prev, botResponse])
     } catch (error) {
-      console.error("Error in chat submission:", error);
-      toast("Failed to get a response. Please try again.", "error");
-
-      // Add error message from bot
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: Date.now().toString(),
-          text: "I'm having trouble connecting right now. Please try again in a moment.",
-          sender: "bot",
-          timestamp: new Date(),
-        },
-      ]);
+      console.error("Error sending message:", error)
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try again.",
+        variant: "destructive",
+      })
+      
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        text: "I'm sorry, I'm having trouble connecting right now. Please try again in a moment.",
+        sender: "bot",
+        timestamp: new Date(),
+      }
+      setMessages(prev => [...prev, errorMessage])
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
-  // Handle clicking a suggested prompt
-  const handleSuggestedPrompt = (prompt: string) => {
-    setInput(prompt)
+  const handleSuggestionClick = (suggestion: string) => {
+    setInput(suggestion)
+    setShowSuggestions(false)
     inputRef.current?.focus()
   }
 
   return (
-    <div className="flex flex-col w-full min-h-[calc(100vh-5rem)] pt-12 pb-4 px-4 md:px-6 bg-background">
-      <div className="w-full max-w-4xl mx-auto flex flex-col flex-grow">
-        {/* Chat header */}
-        <div className="mb-6 text-center">
-          <h1 className="text-2xl md:text-3xl font-bold mb-2 text-primary">
-            PathPilot Chat
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-950">
+      <div className="container mx-auto px-4 py-8 max-w-4xl">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+            Chat with PathPilot
           </h1>
-          <p className="text-muted-foreground text-sm md:text-base">
-            Your AI career counselor is ready to guide your professional journey
+          <p className="text-slate-600 dark:text-slate-400">
+            Get personalized career guidance from our AI counselor
           </p>
         </div>
 
-        {/* Messages container */}
-        <div 
-          ref={chatContainerRef}
-          className="flex-grow overflow-y-auto rounded-xl p-4 md:p-6 bg-secondary/30 backdrop-blur-sm border border-border/30 shadow-lg mb-4"
-          style={{ 
-            boxShadow: "0 4px 24px -8px rgba(0,0,0,0.1), 0 1px 6px -2px rgba(0,0,0,0.06)" 
-          }}
-        >
-          <div className="space-y-6">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+          <div className="h-[600px] overflow-y-auto p-6 space-y-4">
             {messages.map((message) => (
               <div
                 key={message.id}
-                className={`flex ${
-                  message.sender === "user" ? "justify-end" : "justify-start"
-                }`}
+                className={`flex gap-4 ${message.sender === "user" ? "justify-end" : "justify-start"}`}
               >
+                {message.sender === "bot" && (
+                  <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <Bot className="w-4 h-4 text-white" />
+                  </div>
+                )}
+                
                 <div
-                  className={`flex max-w-[85%] md:max-w-[75%] items-start gap-3 ${
-                    message.sender === "user" ? "flex-row-reverse" : ""
+                  className={`max-w-[80%] p-4 rounded-2xl ${
+                    message.sender === "user"
+                      ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white"
+                      : "bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-slate-100"
                   }`}
                 >
-                  <div
-                    className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${
-                      message.sender === "user"
-                        ? "bg-primary/15 text-primary"
-                        : "bg-purple-500/15 text-purple-400"
-                    }`}
-                  >
-                    {message.sender === "user" ? (
-                      <User className="w-4 h-4" />
-                    ) : (
-                      <Bot className="w-4 h-4" />
-                    )}
-                  </div>
-
-                  <div
-                    className={`rounded-2xl px-4 py-3 shadow-md ${
-                      message.sender === "user"
-                        ? "bg-primary text-primary-foreground rounded-tr-sm"
-                        : "bg-secondary text-secondary-foreground rounded-tl-sm border border-border/50"
-                    }`}
-                    style={{
-                      boxShadow: message.sender === "user" 
-                        ? "0 2px 8px -2px rgba(147, 51, 234, 0.2)" 
-                        : "0 2px 8px -2px rgba(0,0,0,0.05)"
-                    }}
-                  >
-                    <p className="text-sm md:text-base leading-relaxed whitespace-pre-wrap">
-                      {message.text}
-                    </p>
-                    <div className="mt-1 text-[10px] opacity-60 text-right">
-                      {new Intl.DateTimeFormat('en-US', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      }).format(message.timestamp)}
-                    </div>
-                  </div>
+                  <p className="whitespace-pre-wrap leading-relaxed">{message.text}</p>
                 </div>
+
+                {message.sender === "user" && (
+                  <div className="w-8 h-8 bg-slate-300 dark:bg-slate-600 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                    <User className="w-4 h-4 text-slate-600 dark:text-slate-300" />
+                  </div>
+                )}
               </div>
             ))}
 
-            {/* Loading indicator */}
             {isLoading && (
-              <div className="flex justify-start">
-                <div className="flex max-w-[85%] md:max-w-[75%] items-start gap-3">
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center bg-purple-500/15 text-purple-400">
-                    <Bot className="w-4 h-4" />
-                  </div>
-                  <div className="rounded-2xl px-4 py-3 bg-secondary text-secondary-foreground rounded-tl-sm shadow-md border border-border/50">
-                    <div className="flex items-center space-x-2">
-                      <div className="flex space-x-1">
-                        <span className="w-2 h-2 bg-purple-500 rounded-full opacity-75"></span>
-                        <span className="w-2 h-2 bg-purple-500 rounded-full opacity-75"></span>
-                        <span className="w-2 h-2 bg-purple-500 rounded-full opacity-75"></span>
-                      </div>
-                      <span className="text-xs text-muted-foreground ml-1">Thinking...</span>
-                    </div>
+              <div className="flex gap-4">
+                <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Bot className="w-4 h-4 text-white" />
+                </div>
+                <div className="bg-slate-100 dark:bg-slate-700 p-4 rounded-2xl">
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin text-purple-600" />
+                    <span className="text-slate-600 dark:text-slate-400">PathPilot is thinking...</span>
                   </div>
                 </div>
               </div>
             )}
-
-            {/* Invisible element for auto-scrolling */}
+            
             <div ref={messagesEndRef} />
           </div>
-        </div>
 
-        {/* Suggested prompts */}
-        {showSuggestions && messages.length <= 2 && (
-          <div className="mb-4">
-            <h3 className="text-sm text-muted-foreground mb-2 ml-1">Try asking about:</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {suggestedPrompts.map((prompt) => (
-                <button
-                  key={prompt.id}
-                  onClick={() => handleSuggestedPrompt(prompt.text)}
-                  className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-secondary/50 hover:bg-secondary text-left transition-colors duration-200 group"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="text-primary/70">{prompt.icon}</span>
-                    <span className="text-sm">{prompt.text}</span>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Input form */}
-        <div className="w-full">
-          <form onSubmit={handleSubmit} className="flex gap-2">
-            <div className="relative flex-grow">
-              <Input
-                ref={inputRef}
-                type="text"
-                placeholder="Type your message..."
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                disabled={isLoading}
-                className="w-full py-6 px-4 pr-10 rounded-full border-border/50 bg-secondary/30 backdrop-blur-sm shadow-md focus-visible:ring-primary/30"
-              />
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none">
-                <CornerDownLeft className="w-4 h-4" />
+          {showSuggestions && messages.length === 1 && (
+            <div className="p-6 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+              <p className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-3">
+                Try asking about:
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {suggestedPrompts.map((prompt, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleSuggestionClick(prompt)}
+                    className="text-left p-3 text-sm bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl hover:bg-purple-50 dark:hover:bg-slate-600 hover:border-purple-300 dark:hover:border-purple-500 transition-all duration-200 group"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-purple-500 group-hover:text-purple-600" />
+                      <span className="text-slate-700 dark:text-slate-300">{prompt}</span>
+                    </div>
+                  </button>
+                ))}
               </div>
             </div>
-            <Button
-              type="submit"
-              disabled={isLoading || !input.trim()}
-              className={`rounded-full w-12 h-12 flex-shrink-0 p-0 ${
-                input.trim()
-                  ? "bg-primary hover:bg-primary/90 text-primary-foreground"
-                  : "bg-muted text-muted-foreground"
-              }`}
-              style={{
-                boxShadow: input.trim() ? "0 4px 14px -4px rgba(147, 51, 234, 0.3)" : "none"
-              }}
-            >
-              <SendHorizontal className="w-5 h-5" />
-            </Button>
-          </form>
-          <div className="mt-3 text-xs text-center text-muted-foreground">
-            PathPilot provides career guidance and advice based on general information.
+          )}
+
+          <div className="p-6 border-t border-slate-200 dark:border-slate-700">
+            <form onSubmit={handleSubmit} className="flex gap-4">
+              <Input
+                ref={inputRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Ask about your career..."
+                className="flex-1 border-slate-300 dark:border-slate-600 focus:border-purple-500 dark:focus:border-purple-400 rounded-xl"
+                disabled={isLoading}
+              />
+              <Button
+                type="submit"
+                disabled={!input.trim() || isLoading}
+                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-6 rounded-xl transition-all duration-200"
+              >
+                <SendHorizontal className="w-4 h-4" />
+              </Button>
+            </form>
           </div>
         </div>
       </div>
