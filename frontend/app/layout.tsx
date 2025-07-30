@@ -1,9 +1,9 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { ThemeProvider } from '@/lib/theme-provider'
-import Navbar from "@/components/navbar"
-import Footer from "@/components/footer"
+import { ThemeProvider } from '../lib/theme-provider'
+import Navbar from "../components/navbar"
+import Footer from "../components/footer"
 
 // Using a clean, modern sans-serif font with optimized loading
 const inter = Inter({ 

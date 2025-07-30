@@ -2,9 +2,9 @@
 
 import { useState, useRef, useEffect, useCallback } from "react"
 import { SendHorizontal, Bot, User, Loader2, Sparkles } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { useToast } from "@/hooks/use-toast"
+import { Button } from "../../components/ui/button"
+import { Input } from "../../components/ui/input"
+import { useToast } from "../../hooks/use-toast"
 
 type Message = {
   id: string

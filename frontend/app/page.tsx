@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { ArrowRight, Bot, MessageCircle, Target, TrendingUp, Users, Star } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Button } from "../components/ui/button"
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)

@@ -5,7 +5,7 @@ import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Menu, X, Compass } from "lucide-react"
-import { useMobile } from "@/hooks/use-mobile"
+import { useMobile } from "../hooks/use-mobile"
 
 export default function Navbar() {
   const pathname = usePathname()
