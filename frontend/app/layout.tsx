@@ -1,9 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-// Import directly from next-themes instead of our local file
-import { ThemeProvider as NextThemesProvider } from 'next-themes'
-import type { ThemeProviderProps } from 'next-themes'
+import { ThemeProvider } from '@/lib/theme-provider'
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 
@@ -18,31 +16,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: 'PathPilot - AI Career Counselor',
-  description: 'Navigate your professional journey with personalized guidance from our advanced AI career counselor',
-  keywords: 'career guidance, AI counselor, job advice, interview tips, resume help, career path',
-  icons: {
-    icon: '/placeholder-logo.png',
-  },
-}
-
-// Define ThemeProvider directly in this file to avoid import issues
-function ThemeProvider({
-  children,
-  attribute = 'class',
-  defaultTheme = 'dark',
-  forcedTheme,
-  ...props
-}: ThemeProviderProps) {
-  return (
-    <NextThemesProvider
-      attribute={attribute}
-      defaultTheme={defaultTheme}
-      forcedTheme={forcedTheme}
-      {...props}
-    >
-      {children}
-    </NextThemesProvider>
-  )
+  description: 'Get personalized career guidance and job search assistance with our AI-powered career counselor.',
 }
 
 export default function RootLayout({

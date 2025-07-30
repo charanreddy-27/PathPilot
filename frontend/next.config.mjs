@@ -38,7 +38,6 @@ const nextConfig = {
   experimental: {
     optimizeCss: false, // Disabled to avoid critters dependency issues
     optimizePackageImports: ['framer-motion', 'lucide-react'],
-    esmExternals: 'loose', // Added for better compatibility
   },
   // Increase build timeout for larger projects
   staticPageGenerationTimeout: 120,
