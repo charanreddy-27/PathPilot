@@ -8,7 +8,12 @@ export async function POST(request: NextRequest) {
     // Get backend URL from environment
     const backendUrl = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000'
     
-    console.log('Attempting to connect to backend:', backendUrl)
+    console.log('Backend URL:', backendUrl)
+    console.log('Full endpoint URL:', `${backendUrl}/chat/message`)
+    console.log('Environment variables:', {
+      NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+      NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL
+    })
     
     try {
       // Try to connect to the actual backend with correct endpoint
@@ -39,13 +44,22 @@ export async function POST(request: NextRequest) {
         throw new Error(`Backend error: ${response.status}`)
       }
       
-    } catch (backendError) {
-      console.log('Backend connection failed:', backendError)
+    } catch (backendError: any) {
+      console.log('Backend connection failed with detailed error:', {
+        error: backendError,
+        message: backendError?.message || 'Unknown error',
+        name: backendError?.name || 'Unknown',
+        cause: backendError?.cause || 'No cause specified',
+        backendUrl: backendUrl,
+        fullUrl: `${backendUrl}/chat/message`
+      })
       
       // Return error message if backend is unavailable
       return NextResponse.json({
-        response: "Sorry, I'm currently unable to connect to the backend service. Please try again later or check if the backend server is running.",
-        status: 'backend_unavailable'
+        response: `Sorry, I'm currently unable to connect to the backend service at ${backendUrl}. Please check if the backend server is running and accessible.`,
+        status: 'backend_unavailable',
+        error: backendError?.message || 'Connection failed',
+        backendUrl: backendUrl
       })
     }
 
