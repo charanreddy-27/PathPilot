@@ -91,21 +91,35 @@ export default function ChatPage() {
       const data = await response.json()
       console.log("API Response:", data)
       
+      const responseText = data.response || "I apologize, but I'm having trouble responding right now. Please try again."
+      const status = data.status || 'unknown'
+      
       const botResponse: Message = {
         id: (Date.now() + 1).toString(),
-        text: data.response || "I apologize, but I'm having trouble responding right now. Please try again.",
+        text: responseText,
         sender: "bot",
         timestamp: new Date(),
       }
 
       setMessages(prev => [...prev, botResponse])
+      
+      // Show connection status to user
+      if (status === 'backend_unavailable') {
+        console.log("Backend service unavailable")
+        toast("Backend service is currently unavailable. Please try again later.", "error")
+      } else if (status === 'connected') {
+        console.log("Connected to backend AI")
+      } else if (status === 'error') {
+        console.log("API Error occurred")
+        toast("An error occurred while processing your request.", "error")
+      }
     } catch (error) {
       console.error("Error sending message:", error)
-      toast("The AI service is currently offline. You'll see a demo response instead.", "error")
+      toast("Unable to connect to the backend service. Please ensure the backend is running and try again.", "error")
       
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: "I'm sorry, I'm having trouble connecting right now. Please try again in a moment.",
+        text: "I'm unable to connect to the backend service right now. Please check if the backend server is running and try again.",
         sender: "bot",
         timestamp: new Date(),
       }
