@@ -84,10 +84,13 @@ export default function ChatPage() {
       })
 
       if (!response.ok) {
+        console.log(`API Response Status: ${response.status}`)
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
       const data = await response.json()
+      console.log("API Response:", data)
+      
       const botResponse: Message = {
         id: (Date.now() + 1).toString(),
         text: data.response || "I apologize, but I'm having trouble responding right now. Please try again.",
@@ -98,11 +101,7 @@ export default function ChatPage() {
       setMessages(prev => [...prev, botResponse])
     } catch (error) {
       console.error("Error sending message:", error)
-      toast({
-        title: "Error",
-        description: "Failed to send message. Please try again.",
-        variant: "destructive",
-      })
+      toast("The AI service is currently offline. You'll see a demo response instead.", "error")
       
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
